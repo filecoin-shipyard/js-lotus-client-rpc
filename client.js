@@ -19,7 +19,6 @@ export default class Client {
       params: [...params],
       id: this.idCounter++
     }
-    console.log('Jim1', this.url)
     try {
       const response = await fetch(this.url, {
         method: 'POST',
@@ -28,10 +27,8 @@ export default class Client {
       })
       // FIXME: Check return code, errors
       const { result } = await response.json()
-      console.log('Jim2')
       return result
     } catch (e) {
-      console.log('Jim3', e.message)
       const promise = new Promise(resolve => {}) // Sleep forever
       return promise
     }

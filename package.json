@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Lotus JS API JSON-RPC query module",
   "type": "module",
+  "main": "client.js",
   "scripts": {
     "lint": "standardx",
     "test": "npm run lint"
