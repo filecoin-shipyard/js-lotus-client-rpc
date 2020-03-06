@@ -1,0 +1,16 @@
+{
+  "name": "@filecoin-shipyard/lotus-api-rpc",
+  "version": "0.0.1",
+  "description": "Lotus JS API JSON-RPC query module",
+  "type": "module",
+  "scripts": {
+    "lint": "standardx",
+    "test": "npm run lint"
+  },
+  "keywords": [],
+  "author": "Jim Pick (@jimpick)",
+  "license": "(Apache-2.0 AND MIT)",
+  "dependencies": {
+    "standardx": "^5.0.0"
+  }
+}
