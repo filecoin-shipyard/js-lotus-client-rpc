@@ -1,4 +1,4 @@
-# Lotus JS API - RPC query module
+# Lotus JS Client - RPC query module
 
 ## License
 
