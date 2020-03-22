@@ -1,9 +1,8 @@
 {
   "name": "@filecoin-shipyard/lotus-client-rpc",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Lotus JS Client JSON-RPC query module",
   "type": "module",
-  "main": "client.js",
   "scripts": {
     "lint": "standardx",
     "test": "npm run lint"

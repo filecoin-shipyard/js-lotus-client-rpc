@@ -1,2 +1,2 @@
-# js-lotus-api-testground changelog
+# js-lotus-api-rpc changelog
 
