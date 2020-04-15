@@ -4,13 +4,23 @@
   "description": "Lotus JS Client JSON-RPC query module",
   "type": "module",
   "scripts": {
-    "lint": "standardx",
-    "test": "npm run lint"
+    "lint": "standard",
+    "test": "npm run lint",
+    "prepublishOnly": "npm test"
   },
   "keywords": [],
   "author": "Jim Pick (@jimpick)",
   "license": "(Apache-2.0 AND MIT)",
-  "dependencies": {
-    "standardx": "^5.0.0"
-  }
+  "devDependencies": {
+    "standard": "^14.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/filecoin-shipyard/lotus-client-rpc.git"
+  },
+  "bugs": {
+    "url": "https://github.com/filecoin-shipyard/lotus-client-rpc/issues"
+  },
+  "homepage": "https://github.com/filecoin-shipyard/lotus-client-rpc#readme",
+  "description": "Lotus JS Client Web Browser Provider module"
 }

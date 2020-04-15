@@ -1,4 +1,4 @@
-export default class LotusClientRPC {
+class LotusClientRPC {
   constructor (provider, { schema }) {
     this.provider = provider
     this.schema = schema
@@ -11,7 +11,10 @@ export default class LotusClientRPC {
           const schemaMethod = schema.methods[method]
           if (schemaMethod) {
             return this.callSchemaMethod.bind(this, method, schemaMethod)
-          } 
+          } else {
+            // FIXME: throw?
+            console.warn(`Unknown method ${method}`)
+          }
         }
       }
     })
@@ -28,7 +31,7 @@ export default class LotusClientRPC {
       return this.provider.sendSubscription(request, schemaMethod, cb)
     } else {
       request.params = args
-      return await this.provider.send(request, schemaMethod)
+      return this.provider.send(request, schemaMethod)
     }
   }
 
@@ -36,3 +39,5 @@ export default class LotusClientRPC {
     this.provider.close()
   }
 }
+
+export default LotusClientRPC
