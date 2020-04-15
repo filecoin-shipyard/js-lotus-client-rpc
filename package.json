@@ -1,7 +1,7 @@
 {
   "name": "@filecoin-shipyard/lotus-client-rpc",
-  "version": "0.0.2",
-  "description": "Lotus JS Client JSON-RPC query module",
+  "version": "0.0.3",
+  "description": "Lotus JS Client Web Browser Provider module",
   "type": "module",
   "scripts": {
     "lint": "standard",
@@ -21,6 +21,5 @@
   "bugs": {
     "url": "https://github.com/filecoin-shipyard/lotus-client-rpc/issues"
   },
-  "homepage": "https://github.com/filecoin-shipyard/lotus-client-rpc#readme",
-  "description": "Lotus JS Client Web Browser Provider module"
+  "homepage": "https://github.com/filecoin-shipyard/lotus-client-rpc#readme"
 }
