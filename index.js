@@ -10,7 +10,11 @@ class LotusClientRPC {
           const method = prop.charAt(0).toUpperCase() + prop.slice(1)
           const schemaMethod = schema.methods[method]
           if (schemaMethod) {
-            return this.callSchemaMethod.bind(this, method, schemaMethod)
+            if (schemaMethod.subscription) {
+              return this.callSchemaMethodSub.bind(this, method, schemaMethod)
+            } else {
+              return this.callSchemaMethod.bind(this, method, schemaMethod)
+            }
           } else {
             // FIXME: throw?
             console.warn(`Unknown method ${method}`)
@@ -25,18 +29,26 @@ class LotusClientRPC {
     const request = {
       method: `Filecoin.${method}`
     }
-    if (schemaMethod.subscription) {
-      const cb = args[0]
-      request.params = args.slice(1)
-      return this.provider.sendSubscription(request, schemaMethod, cb)
-    } else {
-      request.params = args
-      return this.provider.send(request, schemaMethod)
-    }
+    request.params = args
+    return this.provider.send(request, schemaMethod)
   }
 
-  close () {
-    this.provider.close()
+  callSchemaMethodSub (method, schemaMethod, ...args) {
+    // await this.provider.connect()
+    const request = {
+      method: `Filecoin.${method}`
+    }
+    const cb = args[0]
+    request.params = args.slice(1)
+    return this.provider.sendSubscription(request, schemaMethod, cb)
+  }
+
+  async import (body) {
+    return this.provider.import(body)
+  }
+
+  async destroy () {
+    await this.provider.destroy()
   }
 }
 
