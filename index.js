@@ -12,6 +12,8 @@ class LotusClientRPC {
           return undefined
         } else if (prop === '$$typeof') {
           return undefined
+        } else if (prop === 'then') {
+          return undefined
         } else {
           const method = prop.charAt(0).toUpperCase() + prop.slice(1)
           const schemaMethod = schema.methods[method]
