@@ -17,10 +17,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/filecoin-shipyard/lotus-client-rpc.git"
+    "url": "git+https://github.com/filecoin-shipyard/js-lotus-client-rpc.git"
   },
   "bugs": {
-    "url": "https://github.com/filecoin-shipyard/lotus-client-rpc/issues"
+    "url": "https://github.com/filecoin-shipyard/js-lotus-client-rpc/issues"
   },
-  "homepage": "https://github.com/filecoin-shipyard/lotus-client-rpc#readme"
+  "homepage": "https://github.com/filecoin-shipyard/js-lotus-client-rpc#readme"
 }
