@@ -60,4 +60,4 @@ class LotusClientRPC {
   }
 }
 
-export default LotusClientRPC
+module.exports = { LotusClientRPC }
