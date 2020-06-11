@@ -1,4 +1,4 @@
-class LotusClientRPC {
+class LotusRPC {
   constructor (provider, { schema }) {
     this.provider = provider
     this.schema = schema
@@ -60,4 +60,4 @@ class LotusClientRPC {
   }
 }
 
-module.exports = { LotusClientRPC }
+module.exports = { LotusRPC }
