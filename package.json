@@ -1,5 +1,5 @@
 {
-  "name": "@jimpick/lotus-client-rpc",
+  "name": "@filecoin-shipyard/lotus-client-rpc",
   "version": "0.0.8",
   "description": "Lotus JS Client Web Browser Provider module",
   "type": "module",
@@ -8,14 +8,15 @@
     "lint": "standard",
     "test": "npm run lint",
     "prepublishOnly": "npm test",
-    "dual-publish": "dual-publish"
+    "dual-publish": "release-it --no-npm.publish && dual-publish",
+    "dual-publish-check": "rm -rf dual-publish-tmp; dual-publish --check"
   },
   "keywords": [],
   "author": "Jim Pick (@jimpick)",
   "license": "(Apache-2.0 AND MIT)",
   "devDependencies": {
     "dual-publish": "^0.10.2",
-    "standard": "^14.3.3"
+    "standard": "^14.3.4"
   },
   "repository": {
     "type": "git",
