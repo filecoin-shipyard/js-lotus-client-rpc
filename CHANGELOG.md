@@ -1,2 +1,9 @@
 # js-lotus-api-rpc changelog
 
+0.0.11
+------
+
+* Renamed .import() to .importFile() - SES (Secure ECMAScript) doesn't
+  like the method named 'import', presumably because it's the same as
+  the JavaScript keyword.
+  

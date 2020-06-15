@@ -51,8 +51,8 @@ class LotusRPC {
     return this.provider.sendSubscription(request, schemaMethod, cb)
   }
 
-  async import (body) {
-    return this.provider.import(body)
+  async importFile (body) {
+    return this.provider.importFile(body)
   }
 
   async destroy () {
