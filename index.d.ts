@@ -87,6 +87,7 @@ declare type SyncState = { ActiveSyncs: Array<ActiveSync>, VMApplied: number }
 declare type Version = { Version: string, APIVersion: number, BlockDelay: number }
 declare type KeyInfo = { Type: string, PrivateKey: string }
 declare class LotusRPC {
+  constructor (provider: any, options: { schema: any })
   authNew (permission: Array<string>): Promise<string>
   authVerify (str: string): Promise<Array<string>>
   beaconGetEntry (chainEpoch: number): Promise<BeaconEntry>
