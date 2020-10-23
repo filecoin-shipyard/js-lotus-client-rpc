@@ -1,5 +1,10 @@
 # js-lotus-api-rpc changelog
 
+0.0.12
+------
+
+* Added Typescript declarations, generated from schema.
+
 0.0.11
 ------
 
