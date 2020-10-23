@@ -92,7 +92,7 @@ declare class LotusRPC {
   authVerify (str: string): Promise<Array<string>>
   beaconGetEntry (chainEpoch: number): Promise<BeaconEntry>
   chainDeleteObj (cid: Cid): Promise<void>
-  chainExport (chainEpoch: number, bool: boolean, tipSetKey: Cid[]): AsyncIterable<string>
+  chainExport (handler: (data: string) => void, chainEpoch: number, bool: boolean, tipSetKey: Cid[]): [() => void, Promise<void>]
   chainGetBlock (cid: Cid): Promise<BlockHeader>
   chainGetBlockMessages (cid: Cid): Promise<BlockMessages>
   chainGetGenesis (): Promise<TipSet>
@@ -107,18 +107,18 @@ declare class LotusRPC {
   chainGetTipSetByHeight (chainEpoch: number, tipSetKey: Cid[]): Promise<TipSet>
   chainHasObj (cid: Cid): Promise<boolean>
   chainHead (): Promise<TipSet>
-  chainNotify (): AsyncIterable<Array<HeadChange>>
+  chainNotify (handler: (data: Array<HeadChange>) => void): [() => void, Promise<void>]
   chainReadObj (cid: Cid): Promise<string>
   chainSetHead (tipSetKey: Cid[]): Promise<void>
   chainStatObj (cid: Cid, cid1: Cid): Promise<ObjStat>
   chainTipSetWeight (tipSetKey: Cid[]): Promise<string>
   clientCalcCommP (str: string): Promise<CommPRet>
-  clientDataTransferUpdates (): AsyncIterable<DataTransferChannel>
+  clientDataTransferUpdates (handler: (data: DataTransferChannel) => void): [() => void, Promise<void>]
   clientDealSize (cid: Cid): Promise<DataSize>
   clientFindData (cid: Cid, cid1: Cid): Promise<Array<QueryOffer>>
   clientGenCar (fileRef: FileRef, str: string): Promise<void>
   clientGetDealInfo (cid: Cid): Promise<DealInfo>
-  clientGetDealUpdates (): AsyncIterable<DealInfo>
+  clientGetDealUpdates (handler: (data: DealInfo) => void): [() => void, Promise<void>]
   clientHasLocal (cid: Cid): Promise<boolean>
   clientImport (fileRef: FileRef): Promise<ImportRes>
   clientListDataTransfers (): Promise<Array<DataTransferChannel>>
@@ -130,9 +130,9 @@ declare class LotusRPC {
   clientRestartDataTransfer (transferID: number, id: string, bool: boolean): Promise<void>
   clientRetrieve (retrievalOrder: RetrievalOrder, fileRef: FileRef): Promise<void>
   clientRetrieveTryRestartInsufficientFunds (address: string): Promise<void>
-  clientRetrieveWithEvents (retrievalOrder: RetrievalOrder, fileRef: FileRef): AsyncIterable<RetrievalEvent>
+  clientRetrieveWithEvents (handler: (data: RetrievalEvent) => void, retrievalOrder: RetrievalOrder, fileRef: FileRef): [() => void, Promise<void>]
   clientStartDeal (startDealParams: StartDealParams): Promise<Cid>
-  closing (): AsyncIterable<{}>
+  closing (handler: (data: {}) => void): [() => void, Promise<void>]
   createBackup (str: string): Promise<void>
   gasEstimateFeeCap (message: Message, int: number, tipSetKey: Cid[]): Promise<string>
   gasEstimateGasLimit (message: Message, tipSetKey: Cid[]): Promise<number>
@@ -153,7 +153,7 @@ declare class LotusRPC {
   mpoolPushUntrusted (signedMessage: SignedMessage): Promise<Cid>
   mpoolSelect (tipSetKey: Cid[], num: number): Promise<Array<SignedMessage>>
   mpoolSetConfig (mpoolConfig: MpoolConfig): Promise<void>
-  mpoolSub (): AsyncIterable<MpoolUpdate>
+  mpoolSub (handler: (data: MpoolUpdate) => void): [() => void, Promise<void>]
   msigAddApprove (address: string, address1: string, uint: number, address2: string, address3: string, bool: boolean): Promise<Cid>
   msigAddCancel (address: string, address1: string, uint: number, address2: string, bool: boolean): Promise<Cid>
   msigAddPropose (address: string, address1: string, address2: string, bool: boolean): Promise<Cid>
@@ -246,7 +246,7 @@ declare class LotusRPC {
   stateWaitMsgLimited (cid: Cid, uint: number, chainEpoch: number): Promise<MsgLookup>
   syncCheckBad (cid: Cid): Promise<string>
   syncCheckpoint (tipSetKey: Cid[]): Promise<void>
-  syncIncomingBlocks (): AsyncIterable<BlockHeader>
+  syncIncomingBlocks (handler: (data: BlockHeader) => void): [() => void, Promise<void>]
   syncMarkBad (cid: Cid): Promise<void>
   syncState (): Promise<SyncState>
   syncSubmitBlock (blockMsg: BlockMsg): Promise<void>
@@ -267,5 +267,7 @@ declare class LotusRPC {
   walletSignMessage (address: string, message: Message): Promise<SignedMessage>
   walletValidateAddress (str: string): Promise<string>
   walletVerify (address: string, bytes: string, signature: Signature): Promise<boolean>
+  importFile (body: Blob | BufferSource | FormData | URLSearchParams | string | ReadableStream): string
+  destroy (code?: number): void
 }
-export { LotusRPC, BeaconEntry, Ticket, ElectionProof, PoStProof, Signature, BlockHeader, Message, SignedMessage, BlockMessages, ExpTipSet, TipSet, IpldObject, Message1, MessageReceipt, HeadChange, ObjStat, CommPRet, DataTransferChannel, DataSize, RetrievalPeer, QueryOffer, FileRef, DataRef, Time, DealInfo, ImportRes, Import, StorageAsk, RetrievalOrder, RetrievalEvent, StartDealParams, MessageSendSpec, BlockMsg, BlockTemplate, SectorInfo, MiningBaseInfo, MpoolConfig, MpoolUpdate, MsigVesting, AddrInfo, NatInfo, Stats, TopicScoreSnapshot, PeerScoreSnapshot, PubsubScore, ChannelAvailableFunds, ChannelInfo, ModVerifyParams, Merge, SignedVoucher, PaymentInfo, VoucherSpec, PaychStatus, VoucherCreateResult, Fault, Loc, GasTrace, ExecutionTrace, InvocResult, Actor, ComputeStateOutput, DealCollateralBounds, MarketBalance, DealProposal, DealState, MarketDeal, SectorOnChainInfo, BitField, Deadline, MinerInfo, SectorPreCommitInfo, Partition, Claim, MinerPower, Info, MinerSectors, MsgGasCost, ActorState, MsgLookup, SectorExpiration, SectorLocation, SectorPreCommitOnChainInfo, CirculatingSupply, ActiveSync, SyncState, Version, KeyInfo }
+export { LotusRPC, Cid, BeaconEntry, Ticket, ElectionProof, PoStProof, Signature, BlockHeader, Message, SignedMessage, BlockMessages, ExpTipSet, TipSet, IpldObject, Message1, MessageReceipt, HeadChange, ObjStat, CommPRet, DataTransferChannel, DataSize, RetrievalPeer, QueryOffer, FileRef, DataRef, Time, DealInfo, ImportRes, Import, StorageAsk, RetrievalOrder, RetrievalEvent, StartDealParams, MessageSendSpec, BlockMsg, BlockTemplate, SectorInfo, MiningBaseInfo, MpoolConfig, MpoolUpdate, MsigVesting, AddrInfo, NatInfo, Stats, TopicScoreSnapshot, PeerScoreSnapshot, PubsubScore, ChannelAvailableFunds, ChannelInfo, ModVerifyParams, Merge, SignedVoucher, PaymentInfo, VoucherSpec, PaychStatus, VoucherCreateResult, Fault, Loc, GasTrace, ExecutionTrace, InvocResult, Actor, ComputeStateOutput, DealCollateralBounds, MarketBalance, DealProposal, DealState, MarketDeal, SectorOnChainInfo, BitField, Deadline, MinerInfo, SectorPreCommitInfo, Partition, Claim, MinerPower, Info, MinerSectors, MsgGasCost, ActorState, MsgLookup, SectorExpiration, SectorLocation, SectorPreCommitOnChainInfo, CirculatingSupply, ActiveSync, SyncState, Version, KeyInfo }
