@@ -91,84 +91,363 @@ declare class LotusRPC {
   constructor (provider: any, options: { schema: any })
   authNew (permission: Array<string>): Promise<string>
   authVerify (str: string): Promise<Array<string>>
+  /**
+   * beaconGetEntry returns the beacon entry for the given filecoin epoch. If
+   * the entry has not yet been produced, the call will block until the entry
+   * becomes available
+   */
   beaconGetEntry (chainEpoch: number): Promise<BeaconEntry>
+  /**
+   * chainDeleteObj deletes node referenced by the given CID
+   */
   chainDeleteObj (cid: Cid): Promise<void>
+  /**
+   * chainExport returns a stream of bytes with CAR dump of chain data.
+   * The exported chain data includes the header chain from the given tipset
+   * back to genesis, the entire genesis state, and the most recent 'nroots'
+   * state trees.
+   * If oldmsgskip is set, messages from before the requested roots are also not included.
+   */
   chainExport (handler: (data: string) => void, chainEpoch: number, bool: boolean, tipSetKey: Cid[]): [() => void, Promise<void>]
+  /**
+   * chainGetBlock returns the block specified by the given CID.
+   */
   chainGetBlock (cid: Cid): Promise<BlockHeader>
+  /**
+   * chainGetBlockMessages returns messages stored in the specified block.
+   */
   chainGetBlockMessages (cid: Cid): Promise<BlockMessages>
+  /**
+   * chainGetGenesis returns the genesis tipset.
+   */
   chainGetGenesis (): Promise<TipSet>
+  /**
+   * chainGetMessage reads a message referenced by the specified CID from the
+   * chain blockstore.
+   */
   chainGetMessage (cid: Cid): Promise<Message>
   chainGetNode (str: string): Promise<IpldObject>
+  /**
+   * chainGetParentMessages returns messages stored in parent tipset of the
+   * specified block.
+   */
   chainGetParentMessages (cid: Cid): Promise<Array<Message1>>
+  /**
+   * chainGetParentReceipts returns receipts for messages in parent tipset of
+   * the specified block.
+   */
   chainGetParentReceipts (cid: Cid): Promise<Array<MessageReceipt>>
+  /**
+   * chainGetPath returns a set of revert/apply operations needed to get from
+   * one tipset to another, for example:
+   * ```
+   *        to
+   *         ^
+   * from   tAA
+   *   ^     ^
+   * tBA    tAB
+   *  ^---*--^
+   *      ^
+   *     tRR
+   * ```
+   * Would return `[revert(tBA), apply(tAB), apply(tAA)]`
+   */
   chainGetPath (tipSetKey: Cid[], tipSetKey1: Cid[]): Promise<Array<HeadChange>>
+  /**
+   * chainGetRandomnessFromBeacon is used to sample the beacon for randomness.
+   */
   chainGetRandomnessFromBeacon (tipSetKey: Cid[], domainSeparationTag: number, chainEpoch: number, bytes: string): Promise<string>
+  /**
+   * chainGetRandomnessFromTickets is used to sample the chain for randomness.
+   */
   chainGetRandomnessFromTickets (tipSetKey: Cid[], domainSeparationTag: number, chainEpoch: number, bytes: string): Promise<string>
+  /**
+   * chainGetTipSet returns the tipset specified by the given TipSetKey.
+   */
   chainGetTipSet (tipSetKey: Cid[]): Promise<TipSet>
+  /**
+   * chainGetTipSetByHeight looks back for a tipset at the specified epoch.
+   * If there are no blocks at the specified epoch, a tipset at an earlier epoch
+   * will be returned.
+   */
   chainGetTipSetByHeight (chainEpoch: number, tipSetKey: Cid[]): Promise<TipSet>
+  /**
+   * chainHasObj checks if a given CID exists in the chain blockstore.
+   */
   chainHasObj (cid: Cid): Promise<boolean>
+  /**
+   * chainHead returns the current head of the chain.
+   */
   chainHead (): Promise<TipSet>
+  /**
+   * chainNotify returns channel with chain head updates.
+   * First message is guaranteed to be of len == 1, and type == 'current'.
+   */
   chainNotify (handler: (data: Array<HeadChange>) => void): [() => void, Promise<void>]
+  /**
+   * chainReadObj reads ipld nodes referenced by the specified CID from chain
+   * blockstore and returns raw bytes.
+   */
   chainReadObj (cid: Cid): Promise<string>
+  /**
+   * chainSetHead forcefully sets current chain head. Use with caution.
+   */
   chainSetHead (tipSetKey: Cid[]): Promise<void>
+  /**
+   * chainStatObj returns statistics about the graph referenced by 'obj'.
+   * If 'base' is also specified, then the returned stat will be a diff
+   * between the two objects.
+   */
   chainStatObj (cid: Cid, cid1: Cid): Promise<ObjStat>
+  /**
+   * chainTipSetWeight computes weight for the specified tipset.
+   */
   chainTipSetWeight (tipSetKey: Cid[]): Promise<string>
+  /**
+   * clientCalcCommP calculates the CommP for a specified file
+   */
   clientCalcCommP (str: string): Promise<CommPRet>
   clientDataTransferUpdates (handler: (data: DataTransferChannel) => void): [() => void, Promise<void>]
+  /**
+   * clientDealSize calculates real deal data size
+   */
   clientDealSize (cid: Cid): Promise<DataSize>
+  /**
+   * clientFindData identifies peers that have a certain file, and returns QueryOffers (one per peer).
+   */
   clientFindData (cid: Cid, cid1: Cid): Promise<Array<QueryOffer>>
+  /**
+   * clientGenCar generates a CAR file for the specified file.
+   */
   clientGenCar (fileRef: FileRef, str: string): Promise<void>
+  /**
+   * clientGetDealInfo returns the latest information about a given deal.
+   */
   clientGetDealInfo (cid: Cid): Promise<DealInfo>
+  /**
+   * clientGetDealUpdates returns the status of updated deals
+   */
   clientGetDealUpdates (handler: (data: DealInfo) => void): [() => void, Promise<void>]
+  /**
+   * clientHasLocal indicates whether a certain CID is locally stored.
+   */
   clientHasLocal (cid: Cid): Promise<boolean>
+  /**
+   * clientImport imports file under the specified path into filestore.
+   */
   clientImport (fileRef: FileRef): Promise<ImportRes>
+  /**
+   * clientListTransfers returns the status of all ongoing transfers of data
+   */
   clientListDataTransfers (): Promise<Array<DataTransferChannel>>
+  /**
+   * clientListDeals returns information about the deals made by the local client.
+   */
   clientListDeals (): Promise<Array<DealInfo>>
+  /**
+   * clientListImports lists imported files and their root CIDs
+   */
   clientListImports (): Promise<Array<Import>>
+  /**
+   * clientMinerQueryOffer returns a QueryOffer for the specific miner and file.
+   */
   clientMinerQueryOffer (address: string, cid: Cid, cid1: Cid): Promise<QueryOffer>
+  /**
+   * clientQueryAsk returns a signed StorageAsk from the specified miner.
+   */
   clientQueryAsk (id: string, address: string): Promise<StorageAsk>
+  /**
+   * clientRemoveImport removes file import
+   */
   clientRemoveImport (storeID: number): Promise<void>
+  /**
+   * clientRestartDataTransfer attempts to restart a data transfer with the given transfer ID and other peer
+   */
   clientRestartDataTransfer (transferID: number, id: string, bool: boolean): Promise<void>
+  /**
+   * clientRetrieve initiates the retrieval of a file, as specified in the order.
+   */
   clientRetrieve (retrievalOrder: RetrievalOrder, fileRef: FileRef): Promise<void>
+  /**
+   * clientRetrieveTryRestartInsufficientFunds attempts to restart stalled retrievals on a given payment channel
+   * which are stuck due to insufficient funds
+   */
   clientRetrieveTryRestartInsufficientFunds (address: string): Promise<void>
+  /**
+   * clientRetrieveWithEvents initiates the retrieval of a file, as specified in the order, and provides a channel
+   * of status updates.
+   */
   clientRetrieveWithEvents (handler: (data: RetrievalEvent) => void, retrievalOrder: RetrievalOrder, fileRef: FileRef): [() => void, Promise<void>]
+  /**
+   * clientStartDeal proposes a deal with a miner.
+   */
   clientStartDeal (startDealParams: StartDealParams): Promise<Cid>
   closing (handler: (data: {}) => void): [() => void, Promise<void>]
+  /**
+   * createBackup creates node backup onder the specified file name. The
+   * method requires that the lotus daemon is running with the
+   * LOTUS_BACKUP_BASE_PATH environment variable set to some path, and that
+   * the path specified when calling CreateBackup is within the base path
+   */
   createBackup (str: string): Promise<void>
+  /**
+   * gasEstimateFeeCap estimates gas fee cap
+   */
   gasEstimateFeeCap (message: Message, int: number, tipSetKey: Cid[]): Promise<string>
+  /**
+   * gasEstimateGasLimit estimates gas used by the message and returns it.
+   * It fails if message fails to execute.
+   */
   gasEstimateGasLimit (message: Message, tipSetKey: Cid[]): Promise<number>
+  /**
+   * gasEstimateGasPremium estimates what gas price should be used for a
+   * message to have high likelihood of inclusion in `nblocksincl` epochs.
+   */
   gasEstimateGasPremium (uint: number, address: string, int: number, tipSetKey: Cid[]): Promise<string>
+  /**
+   * gasEstimateMessageGas estimates gas values for unset message gas fields
+   */
   gasEstimateMessageGas (message: Message, messageSendSpec: MessageSendSpec, tipSetKey: Cid[]): Promise<Message>
   id (): Promise<string>
   logList (): Promise<Array<string>>
   logSetLevel (str: string, str1: string): Promise<void>
+  /**
+   * marketFreeBalance
+   */
   marketEnsureAvailable (address: string, address1: string, bigInt: string): Promise<Cid>
   minerCreateBlock (blockTemplate: BlockTemplate): Promise<BlockMsg>
   minerGetBaseInfo (address: string, chainEpoch: number, tipSetKey: Cid[]): Promise<MiningBaseInfo>
+  /**
+   * mpoolClear clears pending messages from the mpool
+   */
   mpoolClear (bool: boolean): Promise<void>
+  /**
+   * mpoolGetConfig returns (a copy of) the current mpool config
+   */
   mpoolGetConfig (): Promise<MpoolConfig>
+  /**
+   * mpoolGetNonce gets next nonce for the specified sender.
+   * Note that this method may not be atomic. Use MpoolPushMessage instead.
+   */
   mpoolGetNonce (address: string): Promise<number>
+  /**
+   * mpoolPending returns pending mempool messages.
+   */
   mpoolPending (tipSetKey: Cid[]): Promise<Array<SignedMessage>>
+  /**
+   * mpoolPush pushes a signed message to mempool.
+   */
   mpoolPush (signedMessage: SignedMessage): Promise<Cid>
+  /**
+   * mpoolPushMessage atomically assigns a nonce, signs, and pushes a message
+   * to mempool.
+   * maxFee is only used when GasFeeCap/GasPremium fields aren't specified
+   * 
+   * When maxFee is set to 0, MpoolPushMessage will guess appropriate fee
+   * based on current chain conditions
+   */
   mpoolPushMessage (message: Message, messageSendSpec: MessageSendSpec): Promise<SignedMessage>
+  /**
+   * mpoolPushUntrusted pushes a signed message to mempool from untrusted sources.
+   */
   mpoolPushUntrusted (signedMessage: SignedMessage): Promise<Cid>
+  /**
+   * mpoolSelect returns a list of pending messages for inclusion in the next block
+   */
   mpoolSelect (tipSetKey: Cid[], num: number): Promise<Array<SignedMessage>>
+  /**
+   * mpoolSetConfig sets the mpool config to (a copy of) the supplied config
+   */
   mpoolSetConfig (mpoolConfig: MpoolConfig): Promise<void>
   mpoolSub (handler: (data: MpoolUpdate) => void): [() => void, Promise<void>]
+  /**
+   * msigAddApprove approves a previously proposed AddSigner message
+   * It takes the following params: <multisig address>, <sender address of the approve msg>, <proposed message ID>,
+   * <proposer address>, <new signer>, <whether the number of required signers should be increased>
+   */
   msigAddApprove (address: string, address1: string, uint: number, address2: string, address3: string, bool: boolean): Promise<Cid>
+  /**
+   * msigAddCancel cancels a previously proposed AddSigner message
+   * It takes the following params: <multisig address>, <sender address of the cancel msg>, <proposed message ID>,
+   * <new signer>, <whether the number of required signers should be increased>
+   */
   msigAddCancel (address: string, address1: string, uint: number, address2: string, bool: boolean): Promise<Cid>
+  /**
+   * msigAddPropose proposes adding a signer in the multisig
+   * It takes the following params: <multisig address>, <sender address of the propose msg>,
+   * <new signer>, <whether the number of required signers should be increased>
+   */
   msigAddPropose (address: string, address1: string, address2: string, bool: boolean): Promise<Cid>
+  /**
+   * msigApprove approves a previously-proposed multisig message by transaction ID
+   * It takes the following params: <multisig address>, <proposed transaction ID> <signer address>
+   */
   msigApprove (address: string, uint: number, address1: string): Promise<Cid>
+  /**
+   * msigApproveTxnHash approves a previously-proposed multisig message, specified
+   * using both transaction ID and a hash of the parameters used in the
+   * proposal. This method of approval can be used to ensure you only approve
+   * exactly the transaction you think you are.
+   * It takes the following params: <multisig address>, <proposed message ID>, <proposer address>, <recipient address>, <value to transfer>,
+   * <sender address of the approve msg>, <method to call in the proposed message>, <params to include in the proposed message>
+   */
   msigApproveTxnHash (address: string, uint: number, address1: string, address2: string, bigInt: string, address3: string, uint1: number, bytes: string): Promise<Cid>
+  /**
+   * msigCancel cancels a previously-proposed multisig message
+   * It takes the following params: <multisig address>, <proposed transaction ID>, <recipient address>, <value to transfer>,
+   * <sender address of the cancel msg>, <method to call in the proposed message>, <params to include in the proposed message>
+   */
   msigCancel (address: string, uint: number, address1: string, bigInt: string, address2: string, uint1: number, bytes: string): Promise<Cid>
+  /**
+   * msigCreate creates a multisig wallet
+   * It takes the following params: <required number of senders>, <approving addresses>, <unlock duration>
+   * <initial balance>, <sender address of the create msg>, <gas price>
+   */
   msigCreate (uint: number, address: Array<string>, chainEpoch: number, bigInt: string, address1: string, bigInt1: string): Promise<Cid>
+  /**
+   * msigGetAvailableBalance returns the portion of a multisig's balance that can be withdrawn or spent
+   */
   msigGetAvailableBalance (address: string, tipSetKey: Cid[]): Promise<string>
+  /**
+   * msigGetVested returns the amount of FIL that vested in a multisig in a certain period.
+   * It takes the following params: <multisig address>, <start epoch>, <end epoch>
+   */
   msigGetVested (address: string, tipSetKey: Cid[], tipSetKey1: Cid[]): Promise<string>
+  /**
+   * msigGetVestingSchedule returns the vesting details of a given multisig.
+   */
   msigGetVestingSchedule (address: string, tipSetKey: Cid[]): Promise<MsigVesting>
+  /**
+   * msigPropose proposes a multisig message
+   * It takes the following params: <multisig address>, <recipient address>, <value to transfer>,
+   * <sender address of the propose msg>, <method to call in the proposed message>, <params to include in the proposed message>
+   */
   msigPropose (address: string, address1: string, bigInt: string, address2: string, uint: number, bytes: string): Promise<Cid>
+  /**
+   * msigRemoveSigner proposes the removal of a signer from the multisig.
+   * It accepts the multisig to make the change on, the proposer address to
+   * send the message from, the address to be removed, and a boolean
+   * indicating whether or not the signing threshold should be lowered by one
+   * along with the address removal.
+   */
   msigRemoveSigner (address: string, address1: string, address2: string, bool: boolean): Promise<Cid>
+  /**
+   * msigSwapApprove approves a previously proposed SwapSigner
+   * It takes the following params: <multisig address>, <sender address of the approve msg>, <proposed message ID>,
+   * <proposer address>, <old signer>, <new signer>
+   */
   msigSwapApprove (address: string, address1: string, uint: number, address2: string, address3: string, address4: string): Promise<Cid>
+  /**
+   * msigSwapCancel cancels a previously proposed SwapSigner message
+   * It takes the following params: <multisig address>, <sender address of the cancel msg>, <proposed message ID>,
+   * <old signer>, <new signer>
+   */
   msigSwapCancel (address: string, address1: string, uint: number, address2: string, address3: string): Promise<Cid>
+  /**
+   * msigSwapPropose proposes swapping 2 signers in the multisig
+   * It takes the following params: <multisig address>, <sender address of the propose msg>,
+   * <old signer>, <new signer>
+   */
   msigSwapPropose (address: string, address1: string, address2: string, address3: string): Promise<Cid>
   netAddrsListen (): Promise<AddrInfo>
   netAgentVersion (id: string): Promise<string>
@@ -199,74 +478,300 @@ declare class LotusRPC {
   paychVoucherList (address: string): Promise<Array<SignedVoucher>>
   paychVoucherSubmit (address: string, signedVoucher: SignedVoucher, bytes: string, bytes1: string): Promise<Cid>
   shutdown (): Promise<void>
+  /**
+   * stateAccountKey returns the public key address of the given ID address
+   */
   stateAccountKey (address: string, tipSetKey: Cid[]): Promise<string>
+  /**
+   * stateAllMinerFaults returns all non-expired Faults that occur within lookback epochs of the given tipset
+   */
   stateAllMinerFaults (chainEpoch: number, tipSetKey: Cid[]): Promise<Array<Fault>>
+  /**
+   * stateCall runs the given message and returns its result without any persisted changes.
+   */
   stateCall (message: Message, tipSetKey: Cid[]): Promise<InvocResult>
+  /**
+   * stateChangedActors returns all the actors whose states change between the two given state CIDs
+   * TODO: Should this take tipset keys instead?
+   */
   stateChangedActors (cid: Cid, cid1: Cid): Promise<{ [k: string]: Actor }>
+  /**
+   * stateCirculatingSupply returns the exact circulating supply of Filecoin at the given tipset.
+   * This is not used anywhere in the protocol itself, and is only for external consumption.
+   */
   stateCirculatingSupply (tipSetKey: Cid[]): Promise<string>
+  /**
+   * stateCompute is a flexible command that applies the given messages on the given tipset.
+   * The messages are run as though the VM were at the provided height.
+   */
   stateCompute (chainEpoch: number, message: Array<Message>, tipSetKey: Cid[]): Promise<ComputeStateOutput>
+  /**
+   * stateDealProviderCollateralBounds returns the min and max collateral a storage provider
+   * can issue. It takes the deal size and verified status as parameters.
+   */
   stateDealProviderCollateralBounds (paddedPieceSize: number, bool: boolean, tipSetKey: Cid[]): Promise<DealCollateralBounds>
+  /**
+   * stateGetActor returns the indicated actor's nonce and balance.
+   */
   stateGetActor (address: string, tipSetKey: Cid[]): Promise<Actor>
+  /**
+   * stateGetReceipt returns the message receipt for the given message
+   */
   stateGetReceipt (cid: Cid, tipSetKey: Cid[]): Promise<MessageReceipt>
+  /**
+   * stateListActors returns the addresses of every actor in the state
+   */
   stateListActors (tipSetKey: Cid[]): Promise<Array<string>>
+  /**
+   * stateListMessages looks back and returns all messages with a matching to or from address, stopping at the given height.
+   */
   stateListMessages (message: Message, tipSetKey: Cid[], chainEpoch: number): Promise<Array<Cid>>
+  /**
+   * stateListMiners returns the addresses of every miner that has claimed power in the Power Actor
+   */
   stateListMiners (tipSetKey: Cid[]): Promise<Array<string>>
+  /**
+   * stateLookupID retrieves the ID address of the given address
+   */
   stateLookupID (address: string, tipSetKey: Cid[]): Promise<string>
+  /**
+   * stateMarketBalance looks up the Escrow and Locked balances of the given address in the Storage Market
+   */
   stateMarketBalance (address: string, tipSetKey: Cid[]): Promise<MarketBalance>
+  /**
+   * stateMarketDeals returns information about every deal in the Storage Market
+   */
   stateMarketDeals (tipSetKey: Cid[]): Promise<{ [k: string]: MarketDeal }>
+  /**
+   * stateMarketParticipants returns the Escrow and Locked balances of every participant in the Storage Market
+   */
   stateMarketParticipants (tipSetKey: Cid[]): Promise<{ [k: string]: MarketBalance }>
+  /**
+   * stateMarketStorageDeal returns information about the indicated deal
+   */
   stateMarketStorageDeal (dealID: number, tipSetKey: Cid[]): Promise<MarketDeal>
+  /**
+   * stateMinerActiveSectors returns info about sectors that a given miner is actively proving.
+   */
   stateMinerActiveSectors (address: string, tipSetKey: Cid[]): Promise<Array<SectorOnChainInfo>>
+  /**
+   * stateMinerAvailableBalance returns the portion of a miner's balance that can be withdrawn or spent
+   */
   stateMinerAvailableBalance (address: string, tipSetKey: Cid[]): Promise<string>
+  /**
+   * stateMinerDeadlines returns all the proving deadlines for the given miner
+   */
   stateMinerDeadlines (address: string, tipSetKey: Cid[]): Promise<Array<Deadline>>
+  /**
+   * stateMinerFaults returns a bitfield indicating the faulty sectors of the given miner
+   */
   stateMinerFaults (address: string, tipSetKey: Cid[]): Promise<BitField>
+  /**
+   * stateMinerInfo returns info about the indicated miner
+   */
   stateMinerInfo (address: string, tipSetKey: Cid[]): Promise<MinerInfo>
+  /**
+   * stateMinerInitialPledgeCollateral returns the initial pledge collateral for the specified miner's sector
+   */
   stateMinerInitialPledgeCollateral (address: string, sectorPreCommitInfo: SectorPreCommitInfo, tipSetKey: Cid[]): Promise<string>
+  /**
+   * stateMinerPartitions returns all partitions in the specified deadline
+   */
   stateMinerPartitions (address: string, uint: number, tipSetKey: Cid[]): Promise<Array<Partition>>
+  /**
+   * stateMinerPower returns the power of the indicated miner
+   */
   stateMinerPower (address: string, tipSetKey: Cid[]): Promise<MinerPower>
+  /**
+   * stateMinerInitialPledgeCollateral returns the precommit deposit for the specified miner's sector
+   */
   stateMinerPreCommitDepositForPower (address: string, sectorPreCommitInfo: SectorPreCommitInfo, tipSetKey: Cid[]): Promise<string>
+  /**
+   * stateMinerProvingDeadline calculates the deadline at some epoch for a proving period
+   * and returns the deadline-related calculations.
+   */
   stateMinerProvingDeadline (address: string, tipSetKey: Cid[]): Promise<Info>
+  /**
+   * stateMinerRecoveries returns a bitfield indicating the recovering sectors of the given miner
+   */
   stateMinerRecoveries (address: string, tipSetKey: Cid[]): Promise<BitField>
+  /**
+   * stateMinerSectorCount returns the number of sectors in a miner's sector set and proving set
+   */
   stateMinerSectorCount (address: string, tipSetKey: Cid[]): Promise<MinerSectors>
+  /**
+   * stateMinerSectors returns info about the given miner's sectors. If the filter bitfield is nil, all sectors are included.
+   */
   stateMinerSectors (address: string, bitField: BitField, tipSetKey: Cid[]): Promise<Array<SectorOnChainInfo>>
+  /**
+   * stateMsgGasCost searches for a message in the chain, and returns details of the messages gas costs, including the penalty and miner tip
+   */
   stateMsgGasCost (cid: Cid, tipSetKey: Cid[]): Promise<MsgGasCost>
+  /**
+   * stateNetworkName returns the name of the network the node is synced to
+   */
   stateNetworkName (): Promise<string>
+  /**
+   * stateNetworkVersion returns the network version at the given tipset
+   */
   stateNetworkVersion (tipSetKey: Cid[]): Promise<number>
+  /**
+   * stateReadState returns the indicated actor's state.
+   */
   stateReadState (address: string, tipSetKey: Cid[]): Promise<ActorState>
+  /**
+   * stateReplay returns the result of executing the indicated message, assuming it was executed in the indicated tipset.
+   */
   stateReplay (tipSetKey: Cid[], cid: Cid): Promise<InvocResult>
+  /**
+   * stateSearchMsg searches for a message in the chain, and returns its receipt and the tipset where it was executed
+   */
   stateSearchMsg (cid: Cid): Promise<MsgLookup>
+  /**
+   * stateSectorExpiration returns epoch at which given sector will expire
+   */
   stateSectorExpiration (address: string, sectorNumber: number, tipSetKey: Cid[]): Promise<SectorExpiration>
+  /**
+   * stateSectorGetInfo returns the on-chain info for the specified miner's sector. Returns null in case the sector info isn't found
+   * NOTE: returned info.Expiration may not be accurate in some cases, use StateSectorExpiration to get accurate
+   * expiration epoch
+   */
   stateSectorGetInfo (address: string, sectorNumber: number, tipSetKey: Cid[]): Promise<SectorOnChainInfo>
+  /**
+   * stateSectorPartition finds deadline/partition with the specified sector
+   */
   stateSectorPartition (address: string, sectorNumber: number, tipSetKey: Cid[]): Promise<SectorLocation>
+  /**
+   * stateSectorPreCommitInfo returns the PreCommit info for the specified miner's sector
+   */
   stateSectorPreCommitInfo (address: string, sectorNumber: number, tipSetKey: Cid[]): Promise<SectorPreCommitOnChainInfo>
+  /**
+   * stateVMCirculatingSupplyInternal returns an approximation of the circulating supply of Filecoin at the given tipset.
+   * This is the value reported by the runtime interface to actors code.
+   */
   stateVMCirculatingSupplyInternal (tipSetKey: Cid[]): Promise<CirculatingSupply>
+  /**
+   * stateVerifiedClientStatus returns the data cap for the given address.
+   * Returns nil if there is no entry in the data cap table for the
+   * address.
+   */
   stateVerifiedClientStatus (address: string, tipSetKey: Cid[]): Promise<string>
+  /**
+   * stateVerifiedClientStatus returns the address of the Verified Registry's root key
+   */
   stateVerifiedRegistryRootKey (tipSetKey: Cid[]): Promise<string>
+  /**
+   * stateVerifierStatus returns the data cap for the given address.
+   * Returns nil if there is no entry in the data cap table for the
+   * address.
+   */
   stateVerifierStatus (address: string, tipSetKey: Cid[]): Promise<string>
+  /**
+   * stateWaitMsg looks back in the chain for a message. If not found, it blocks until the
+   * message arrives on chain, and gets to the indicated confidence depth.
+   */
   stateWaitMsg (cid: Cid, uint: number): Promise<MsgLookup>
+  /**
+   * stateWaitMsgLimited looks back up to limit epochs in the chain for a message.
+   * If not found, it blocks until the message arrives on chain, and gets to the
+   * indicated confidence depth.
+   */
   stateWaitMsgLimited (cid: Cid, uint: number, chainEpoch: number): Promise<MsgLookup>
+  /**
+   * syncCheckBad checks if a block was marked as bad, and if it was, returns
+   * the reason.
+   */
   syncCheckBad (cid: Cid): Promise<string>
+  /**
+   * syncCheckpoint marks a blocks as checkpointed, meaning that it won't ever fork away from it.
+   */
   syncCheckpoint (tipSetKey: Cid[]): Promise<void>
+  /**
+   * syncIncomingBlocks returns a channel streaming incoming, potentially not
+   * yet synced block headers.
+   */
   syncIncomingBlocks (handler: (data: BlockHeader) => void): [() => void, Promise<void>]
+  /**
+   * syncMarkBad marks a blocks as bad, meaning that it won't ever by synced.
+   * Use with extreme caution.
+   */
   syncMarkBad (cid: Cid): Promise<void>
+  /**
+   * syncState returns the current status of the lotus sync system.
+   */
   syncState (): Promise<SyncState>
+  /**
+   * syncSubmitBlock can be used to submit a newly created block to the.
+   * network through this node
+   */
   syncSubmitBlock (blockMsg: BlockMsg): Promise<void>
+  /**
+   * syncUnmarkAllBad purges bad block cache, making it possible to sync to chains previously marked as bad
+   */
   syncUnmarkAllBad (): Promise<void>
+  /**
+   * syncUnmarkBad unmarks a blocks as bad, making it possible to be validated and synced again.
+   */
   syncUnmarkBad (cid: Cid): Promise<void>
+  /**
+   * syncValidateTipset indicates whether the provided tipset is valid or not
+   */
   syncValidateTipset (tipSetKey: Cid[]): Promise<boolean>
   version (): Promise<Version>
+  /**
+   * walletBalance returns the balance of the given address at the current head of the chain.
+   */
   walletBalance (address: string): Promise<string>
+  /**
+   * walletDefaultAddress returns the address marked as default in the wallet.
+   */
   walletDefaultAddress (): Promise<string>
+  /**
+   * walletDelete deletes an address from the wallet.
+   */
   walletDelete (address: string): Promise<void>
+  /**
+   * walletExport returns the private key of an address in the wallet.
+   */
   walletExport (address: string): Promise<KeyInfo>
+  /**
+   * walletHas indicates whether the given address is in the wallet.
+   */
   walletHas (address: string): Promise<boolean>
+  /**
+   * walletImport receives a KeyInfo, which includes a private key, and imports it into the wallet.
+   */
   walletImport (keyInfo: KeyInfo): Promise<string>
+  /**
+   * walletList lists all the addresses in the wallet.
+   */
   walletList (): Promise<Array<string>>
+  /**
+   * walletNew creates a new address in the wallet with the given sigType.
+   * Available key types: bls, secp256k1, secp256k1-ledger
+   * Support for numerical types: 1 - secp256k1, 2 - BLS is deprecated
+   */
   walletNew (keyType: string): Promise<string>
+  /**
+   * walletSetDefault marks the given address as as the default one.
+   */
   walletSetDefault (address: string): Promise<void>
+  /**
+   * walletSign signs the given bytes using the given address.
+   */
   walletSign (address: string, bytes: string): Promise<Signature>
+  /**
+   * walletSignMessage signs the given message using the given address.
+   */
   walletSignMessage (address: string, message: Message): Promise<SignedMessage>
+  /**
+   * walletValidateAddress validates whether a given string can be decoded as a well-formed address
+   */
   walletValidateAddress (str: string): Promise<string>
+  /**
+   * walletVerify takes an address, a signature, and some bytes, and indicates whether the signature is valid.
+   * The address does not have to be in the wallet.
+   */
   walletVerify (address: string, bytes: string, signature: Signature): Promise<boolean>
   importFile (body: Blob | BufferSource | FormData | URLSearchParams | string | ReadableStream): string
   destroy (code?: number): void
