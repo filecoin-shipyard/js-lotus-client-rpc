@@ -55,13 +55,15 @@ declare type VoucherSpec = { Amount: string, TimeLockMin: number, TimeLockMax: n
 declare type PaychStatus = { ControlAddr: string, Direction: number }
 declare type VoucherCreateResult = { Voucher: SignedVoucher, Shortfall: string }
 declare type Fault = { Miner: string, Epoch: number }
+declare type MsgGasCost = { Message: Cid, GasUsed: string, BaseFeeBurn: string, OverEstimationBurn: string, MinerPenalty: string, MinerTip: string, Refund: string, TotalCost: string }
 declare type Loc = { File: string, Line: number, Function: string }
 declare type GasTrace = { Name: string, Location: Array<Loc>, TotalGas: number, ComputeGas: number, StorageGas: number, TotalVirtualGas: number, VirtualComputeGas: number, VirtualStorageGas: number, TimeTaken: number, Extra: any, Callers: Array<number> }
 declare type ExecutionTrace = { Msg: Message, MsgRct: MessageReceipt, Error: string, Duration: number, GasCharges: Array<GasTrace>, Subcalls: ExecutionTrace[] }
-declare type InvocResult = { MsgCid: Cid, Msg: Message, MsgRct: MessageReceipt, ExecutionTrace: ExecutionTrace, Error: string, Duration: number }
+declare type InvocResult = { MsgCid: Cid, Msg: Message, MsgRct: MessageReceipt, GasCost: MsgGasCost, ExecutionTrace: ExecutionTrace, Error: string, Duration: number }
 declare type Actor = { Code: Cid, Head: Cid, Nonce: number, Balance: string }
 declare type ComputeStateOutput = { Root: Cid, Trace: Array<InvocResult> }
 declare type DealCollateralBounds = { Min: string, Max: string }
+declare type MessageMatch = { To: string, From: string }
 declare type MarketBalance = { Escrow: string, Locked: string }
 declare type DealProposal = { PieceCID: Cid, PieceSize: number, VerifiedDeal: boolean, Client: string, Provider: string, Label: string, StartEpoch: number, EndEpoch: number, StoragePricePerEpoch: string, ProviderCollateral: string, ClientCollateral: string }
 declare type DealState = { SectorStartEpoch: number, LastUpdatedEpoch: number, SlashEpoch: number }
@@ -76,7 +78,6 @@ declare type Claim = { RawBytePower: string, QualityAdjPower: string }
 declare type MinerPower = { MinerPower: Claim, TotalPower: Claim, HasMinPower: boolean }
 declare type Info = { CurrentEpoch: number, PeriodStart: number, Index: number, Open: number, Close: number, Challenge: number, FaultCutoff: number, WPoStPeriodDeadlines: number, WPoStProvingPeriod: number, WPoStChallengeWindow: number, WPoStChallengeLookback: number, FaultDeclarationCutoff: number }
 declare type MinerSectors = { Live: number, Active: number, Faulty: number }
-declare type MsgGasCost = { Message: Cid, GasUsed: string, BaseFeeBurn: string, OverEstimationBurn: string, MinerPenalty: string, MinerTip: string, Refund: string, TotalCost: string }
 declare type ActorState = { Balance: string, State: any }
 declare type MsgLookup = { Message: Cid, Receipt: MessageReceipt, ReturnDec: any, TipSet: Cid[], Height: number }
 declare type SectorExpiration = { OnTime: number, Early: number }
@@ -225,6 +226,10 @@ declare class LotusRPC {
    */
   clientGetDealInfo (cid: Cid): Promise<DealInfo>
   /**
+   * clientGetDealStatus returns status given a code
+   */
+  clientGetDealStatus (uint: number): Promise<string>
+  /**
    * clientGetDealUpdates returns the status of updated deals
    */
   clientGetDealUpdates (handler: (data: DealInfo) => void): [() => void, Promise<void>]
@@ -317,6 +322,18 @@ declare class LotusRPC {
   marketEnsureAvailable (address: string, address1: string, bigInt: string): Promise<Cid>
   minerCreateBlock (blockTemplate: BlockTemplate): Promise<BlockMsg>
   minerGetBaseInfo (address: string, chainEpoch: number, tipSetKey: Cid[]): Promise<MiningBaseInfo>
+  /**
+   * mpoolBatchPush batch pushes a signed message to mempool.
+   */
+  mpoolBatchPush (signedMessage: Array<SignedMessage>): Promise<Array<Cid>>
+  /**
+   * mpoolBatchPushMessage batch pushes a unsigned message to mempool.
+   */
+  mpoolBatchPushMessage (message: Array<Message>, messageSendSpec: MessageSendSpec): Promise<Array<SignedMessage>>
+  /**
+   * mpoolBatchPushUntrusted batch pushes a signed message to mempool from untrusted sources.
+   */
+  mpoolBatchPushUntrusted (signedMessage: Array<SignedMessage>): Promise<Array<Cid>>
   /**
    * mpoolClear clears pending messages from the mpool
    */
@@ -525,7 +542,7 @@ declare class LotusRPC {
   /**
    * stateListMessages looks back and returns all messages with a matching to or from address, stopping at the given height.
    */
-  stateListMessages (message: Message, tipSetKey: Cid[], chainEpoch: number): Promise<Array<Cid>>
+  stateListMessages (messageMatch: MessageMatch, tipSetKey: Cid[], chainEpoch: number): Promise<Array<Cid>>
   /**
    * stateListMiners returns the addresses of every miner that has claimed power in the Power Actor
    */
@@ -604,10 +621,6 @@ declare class LotusRPC {
    */
   stateMinerSectors (address: string, bitField: BitField, tipSetKey: Cid[]): Promise<Array<SectorOnChainInfo>>
   /**
-   * stateMsgGasCost searches for a message in the chain, and returns details of the messages gas costs, including the penalty and miner tip
-   */
-  stateMsgGasCost (cid: Cid, tipSetKey: Cid[]): Promise<MsgGasCost>
-  /**
    * stateNetworkName returns the name of the network the node is synced to
    */
   stateNetworkName (): Promise<string>
@@ -620,7 +633,8 @@ declare class LotusRPC {
    */
   stateReadState (address: string, tipSetKey: Cid[]): Promise<ActorState>
   /**
-   * stateReplay returns the result of executing the indicated message, assuming it was executed in the indicated tipset.
+   * stateReplay replays a given message, assuming it was included in a block in the specified tipset.
+   * If no tipset key is provided, the appropriate tipset is looked up.
    */
   stateReplay (tipSetKey: Cid[], cid: Cid): Promise<InvocResult>
   /**
@@ -776,4 +790,4 @@ declare class LotusRPC {
   importFile (body: Blob | BufferSource | FormData | URLSearchParams | string | ReadableStream): string
   destroy (code?: number): void
 }
-export { LotusRPC, Cid, BeaconEntry, Ticket, ElectionProof, PoStProof, Signature, BlockHeader, Message, SignedMessage, BlockMessages, ExpTipSet, TipSet, IpldObject, Message1, MessageReceipt, HeadChange, ObjStat, CommPRet, DataTransferChannel, DataSize, RetrievalPeer, QueryOffer, FileRef, DataRef, Time, DealInfo, ImportRes, Import, StorageAsk, RetrievalOrder, RetrievalEvent, StartDealParams, MessageSendSpec, BlockMsg, BlockTemplate, SectorInfo, MiningBaseInfo, MpoolConfig, MpoolUpdate, MsigVesting, AddrInfo, NatInfo, Stats, TopicScoreSnapshot, PeerScoreSnapshot, PubsubScore, ChannelAvailableFunds, ChannelInfo, ModVerifyParams, Merge, SignedVoucher, PaymentInfo, VoucherSpec, PaychStatus, VoucherCreateResult, Fault, Loc, GasTrace, ExecutionTrace, InvocResult, Actor, ComputeStateOutput, DealCollateralBounds, MarketBalance, DealProposal, DealState, MarketDeal, SectorOnChainInfo, BitField, Deadline, MinerInfo, SectorPreCommitInfo, Partition, Claim, MinerPower, Info, MinerSectors, MsgGasCost, ActorState, MsgLookup, SectorExpiration, SectorLocation, SectorPreCommitOnChainInfo, CirculatingSupply, ActiveSync, SyncState, Version, KeyInfo }
+export { LotusRPC, Cid, BeaconEntry, Ticket, ElectionProof, PoStProof, Signature, BlockHeader, Message, SignedMessage, BlockMessages, ExpTipSet, TipSet, IpldObject, Message1, MessageReceipt, HeadChange, ObjStat, CommPRet, DataTransferChannel, DataSize, RetrievalPeer, QueryOffer, FileRef, DataRef, Time, DealInfo, ImportRes, Import, StorageAsk, RetrievalOrder, RetrievalEvent, StartDealParams, MessageSendSpec, BlockMsg, BlockTemplate, SectorInfo, MiningBaseInfo, MpoolConfig, MpoolUpdate, MsigVesting, AddrInfo, NatInfo, Stats, TopicScoreSnapshot, PeerScoreSnapshot, PubsubScore, ChannelAvailableFunds, ChannelInfo, ModVerifyParams, Merge, SignedVoucher, PaymentInfo, VoucherSpec, PaychStatus, VoucherCreateResult, Fault, MsgGasCost, Loc, GasTrace, ExecutionTrace, InvocResult, Actor, ComputeStateOutput, DealCollateralBounds, MessageMatch, MarketBalance, DealProposal, DealState, MarketDeal, SectorOnChainInfo, BitField, Deadline, MinerInfo, SectorPreCommitInfo, Partition, Claim, MinerPower, Info, MinerSectors, ActorState, MsgLookup, SectorExpiration, SectorLocation, SectorPreCommitOnChainInfo, CirculatingSupply, ActiveSync, SyncState, Version, KeyInfo }
