@@ -1,6 +1,6 @@
 {
   "name": "@filecoin-shipyard/lotus-client-rpc",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Lotus JS Client Web Browser Provider module",
   "scripts": {
     "lint": "standard",
