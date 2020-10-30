@@ -1,5 +1,10 @@
 # js-lotus-api-rpc changelog
 
+0.0.14
+------
+
+* Add missing storage miner and worker API methods to Typescript declarations.
+
 0.0.13
 ------
 
