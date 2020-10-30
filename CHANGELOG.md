@@ -1,5 +1,10 @@
 # js-lotus-api-rpc changelog
 
+0.0.13
+------
+
+* Adds method descriptions to Typescript declarations.
+
 0.0.12
 ------
 
