@@ -3,10 +3,14 @@ declare type Cid = { '/': string }
 declare type AddrInfo = { ID: string, Addrs: Array<any> }
 declare type NatInfo = { Reachability: number, PublicAddr: string }
 declare type Stats = { TotalIn: number, TotalOut: number, RateIn: number, RateOut: number }
+declare type NetBlockList = { Peers: Array<string>, IPAddrs: Array<string>, IPSubnets: Array<string> }
+declare type Time = {}
+declare type ConnMgrInfo = { FirstSeen: Time, Value: number, Tags: { [k: string]: number }, Conns: { [k: string]: Time } }
+declare type ExtendedPeerInfo = { ID: string, Agent: string, Addrs: Array<string>, Protocols: Array<string>, ConnMgrMeta: ConnMgrInfo }
 declare type TopicScoreSnapshot = { TimeInMesh: number, FirstMessageDeliveries: number, MeshMessageDeliveries: number, InvalidMessageDeliveries: number }
 declare type PeerScoreSnapshot = { Score: number, Topics: { [k: string]: TopicScoreSnapshot }, AppSpecificScore: number, IPColocationFactor: number, BehaviourPenalty: number }
 declare type PubsubScore = { ID: string, Score: PeerScoreSnapshot }
-declare type Version = { Version: string, APIVersion: number, BlockDelay: number }
+declare type APIVersion = { Version: string, APIVersion: number, BlockDelay: number }
 declare type BeaconEntry = { Round: number, Data: string }
 declare type Ticket = { VRFProof: string }
 declare type ElectionProof = { WinCount: number, VRFProof: string }
@@ -25,13 +29,14 @@ declare type HeadChange = { Type: string, Val: TipSet }
 declare type ObjStat = { Size: number, Links: number }
 declare type CommPRet = { Root: Cid, Size: number }
 declare type DataTransferChannel = { TransferID: number, Status: number, BaseCID: Cid, IsInitiator: boolean, IsSender: boolean, Voucher: string, Message: string, OtherPeer: string, Transferred: number }
+declare type DataCIDSize = { PayloadSize: number, PieceSize: number, PieceCID: Cid }
 declare type DataSize = { PayloadSize: number, PieceSize: number }
 declare type RetrievalPeer = { Address: string, ID: string, PieceCID: Cid }
 declare type QueryOffer = { Err: string, Root: Cid, Piece: Cid, Size: number, MinPrice: string, UnsealPrice: string, PaymentInterval: number, PaymentIntervalIncrease: number, Miner: string, MinerPeer: RetrievalPeer }
 declare type FileRef = { Path: string, IsCAR: boolean }
-declare type DataRef = { TransferType: string, Root: Cid, PieceCid: Cid, PieceSize: number }
-declare type Time = {}
-declare type DealInfo = { ProposalCid: Cid, State: number, Message: string, Provider: string, DataRef: DataRef, PieceCID: Cid, Size: number, PricePerEpoch: string, Duration: number, DealID: number, CreationTime: Time, Verified: boolean }
+declare type DataRef = { TransferType: string, Root: Cid, PieceCid: Cid, PieceSize: number, RawBlockSize: number }
+declare type ChannelID = { Initiator: string, Responder: string, ID: number }
+declare type DealInfo = { ProposalCid: Cid, State: number, Message: string, Provider: string, DataRef: DataRef, PieceCID: Cid, Size: number, PricePerEpoch: string, Duration: number, DealID: number, CreationTime: Time, Verified: boolean, TransferChannelID: ChannelID, DataTransfer: DataTransferChannel }
 declare type ImportRes = { Root: Cid, ImportID: number }
 declare type Import = { Key: number, Err: string, Root: Cid, Source: string, FilePath: string }
 declare type StorageAsk = { Price: string, VerifiedPrice: string, MinPieceSize: number, MaxPieceSize: number, Miner: string, Timestamp: number, Expiry: number, SeqNo: number }
@@ -45,6 +50,7 @@ declare type SectorInfo = { SealProof: number, SectorNumber: number, SealedCID: 
 declare type MiningBaseInfo = { MinerPower: string, NetworkPower: string, Sectors: Array<SectorInfo>, WorkerKey: string, SectorSize: number, PrevBeaconEntry: BeaconEntry, BeaconEntries: Array<BeaconEntry>, EligibleForMining: boolean }
 declare type MpoolConfig = { PriorityAddrs: Array<string>, SizeLimitHigh: number, SizeLimitLow: number, ReplaceByFeeRatio: number, PruneCooldown: number, GasLimitOverestimation: number }
 declare type MpoolUpdate = { Type: number, Message: SignedMessage }
+declare type MsigTransaction = { ID: number, To: string, Value: string, Method: number, Params: string, Approved: Array<string> }
 declare type MsigVesting = { InitialBalance: string, StartEpoch: number, UnlockDuration: number }
 declare type ChannelAvailableFunds = { Channel: string, From: string, To: string, ConfirmedAmt: string, PendingAmt: string, PendingWaitSentinel: Cid, QueuedAmt: string, VoucherReedeemedAmt: string }
 declare type ChannelInfo = { Channel: string, WaitSentinel: Cid }
@@ -71,29 +77,31 @@ declare type DealState = { SectorStartEpoch: number, LastUpdatedEpoch: number, S
 declare type MarketDeal = { Proposal: DealProposal, State: DealState }
 declare type SectorOnChainInfo = { SectorNumber: number, SealProof: number, SealedCID: Cid, DealIDs: Array<number>, Activation: number, Expiration: number, DealWeight: string, VerifiedDealWeight: string, InitialPledge: string, ExpectedDayReward: string, ExpectedStoragePledge: string }
 declare type BitField = {}
-declare type Deadline = { PostSubmissions: BitField }
-declare type MinerInfo = { Owner: string, Worker: string, NewWorker: string, ControlAddresses: Array<string>, WorkerChangeEpoch: number, PeerId: string, Multiaddrs: Array<string>, SealProofType: number, SectorSize: number, WindowPoStPartitionSectors: number, ConsensusFaultElapsed: number }
+declare type Deadline = { PostSubmissions: BitField, DisputableProofCount: number }
+declare type MinerInfo = { Owner: string, Worker: string, NewWorker: string, ControlAddresses: Array<string>, WorkerChangeEpoch: number, PeerId: string, Multiaddrs: Array<string>, WindowPoStProofType: number, SectorSize: number, WindowPoStPartitionSectors: number, ConsensusFaultElapsed: number }
 declare type SectorPreCommitInfo = { SealProof: number, SectorNumber: number, SealedCID: Cid, SealRandEpoch: number, DealIDs: Array<number>, Expiration: number, ReplaceCapacity: boolean, ReplaceSectorDeadline: number, ReplaceSectorPartition: number, ReplaceSectorNumber: number }
 declare type Partition = { AllSectors: BitField, FaultySectors: BitField, RecoveringSectors: BitField, LiveSectors: BitField, ActiveSectors: BitField }
 declare type Claim = { RawBytePower: string, QualityAdjPower: string }
 declare type MinerPower = { MinerPower: Claim, TotalPower: Claim, HasMinPower: boolean }
 declare type Info = { CurrentEpoch: number, PeriodStart: number, Index: number, Open: number, Close: number, Challenge: number, FaultCutoff: number, WPoStPeriodDeadlines: number, WPoStProvingPeriod: number, WPoStChallengeWindow: number, WPoStChallengeLookback: number, FaultDeclarationCutoff: number }
 declare type MinerSectors = { Live: number, Active: number, Faulty: number }
-declare type ActorState = { Balance: string, State: any }
+declare type ActorState = { Balance: string, Code: Cid, State: any }
 declare type MsgLookup = { Message: Cid, Receipt: MessageReceipt, ReturnDec: any, TipSet: Cid[], Height: number }
 declare type SectorExpiration = { OnTime: number, Early: number }
 declare type SectorLocation = { Deadline: number, Partition: number }
 declare type SectorPreCommitOnChainInfo = { Info: SectorPreCommitInfo, PreCommitDeposit: string, PreCommitEpoch: number, DealWeight: string, VerifiedDealWeight: string }
 declare type CirculatingSupply = { FilVested: string, FilMined: string, FilBurnt: string, FilLocked: string, FilCirculating: string }
-declare type ActiveSync = { Base: TipSet, Target: TipSet, Stage: number, Height: number, Start: Time, End: Time, Message: string }
+declare type ActiveSync = { WorkerID: number, Base: TipSet, Target: TipSet, Stage: number, Height: number, Start: Time, End: Time, Message: string }
 declare type SyncState = { ActiveSyncs: Array<ActiveSync>, VMApplied: number }
 declare type KeyInfo = { Type: string, PrivateKey: string }
+declare type AddressConfig = { PreCommitControl: Array<string>, CommitControl: Array<string>, TerminateControl: Array<string>, DisableOwnerFallback: boolean, DisableWorkerFallback: boolean }
+declare type SectorID = { Miner: number, Number: number }
+declare type SectorRef = { ID: SectorID, ProofType: number }
 declare type SignedStorageAsk = { Ask: StorageAsk, Signature: Signature }
 declare type DealProposal1 = { PieceCID: Cid, PieceSize: number, VerifiedDeal: boolean, Client: string, Provider: string, Label: string, StartEpoch: number, EndEpoch: number, StoragePricePerEpoch: string, ProviderCollateral: string, ClientCollateral: string }
 declare type ClientDealProposal = { Proposal: DealProposal1, ClientSignature: Signature }
 declare type CborTime = {}
-declare type ChannelID = { Initiator: string, Responder: string, ID: number }
-declare type MinerDeal = { ClientDealProposal: ClientDealProposal, ProposalCid: Cid, AddFundsCid: Cid, PublishCid: Cid, Miner: string, Client: string, State: number, PiecePath: string, MetadataPath: string, SlashEpoch: number, FastRetrieval: boolean, Message: string, StoreID: number, FundsReserved: string, Ref: DataRef, AvailableForRetrieval: boolean, DealID: number, CreationTime: CborTime, TransferChannelId: ChannelID }
+declare type MinerDeal = { ClientDealProposal: ClientDealProposal, ProposalCid: Cid, AddFundsCid: Cid, PublishCid: Cid, Miner: string, Client: string, State: number, PiecePath: string, MetadataPath: string, SlashEpoch: number, FastRetrieval: boolean, Message: string, StoreID: number, FundsReserved: string, Ref: DataRef, AvailableForRetrieval: boolean, DealID: number, CreationTime: CborTime, TransferChannelId: ChannelID, SectorNumber: number }
 declare type Ask = { PricePerByte: string, UnsealPrice: string, PaymentInterval: number, PaymentIntervalIncrease: number }
 declare type Deferred = { Raw: string }
 declare type Params = { Selector: Deferred, PieceCID: Cid, PricePerByte: string, PaymentInterval: number, PaymentIntervalIncrease: number, UnsealPrice: string }
@@ -101,63 +109,73 @@ declare type DealProposal2 = { PayloadCID: Cid, ID: number, Params: Params }
 declare type DealInfo1 = { DealID: number, SectorID: number, Offset: number, Length: number }
 declare type PieceInfo = { PieceCID: Cid, Deals: Array<DealInfo1> }
 declare type ProviderDealState = { DealProposal: DealProposal2, StoreID: number, ChannelID: ChannelID, PieceInfo: PieceInfo, Status: number, Receiver: string, TotalSent: number, FundsReceived: string, Message: string, CurrentInterval: number, LegacyProtocol: boolean }
+declare type PendingDealInfo = { Deals: Array<ClientDealProposal>, PublishPeriodStart: Time, PublishPeriod: number }
 declare type BlockLocation = { RelOffset: number, BlockSize: number }
 declare type PieceBlockLocation = { BlockLocation: BlockLocation, PieceCID: Cid }
 declare type CIDInfo = { CID: Cid, PieceBlockLocations: Array<PieceBlockLocation> }
+declare type CallID = { Sector: SectorID, ID: Array<number> }
+declare type PieceInfo1 = { Size: number, PieceCID: Cid }
+declare type CallError = { Code: number, Message: string }
+declare type SectorCids = { Unsealed: Cid, Sealed: Cid }
 declare type SealedRef = { SectorID: number, Offset: number, Size: number }
 declare type SealTicket = { Value: Array<number>, Epoch: number }
 declare type SealSeed = { Value: Array<number>, Epoch: number }
 declare type SectorLog = { Kind: string, Timestamp: number, Trace: string, Message: string }
 declare type SectorInfo1 = { SectorID: number, State: string, CommD: Cid, CommR: Cid, Proof: string, Deals: Array<number>, Ticket: SealTicket, Seed: SealSeed, PreCommitMsg: Cid, CommitMsg: Cid, Retries: number, ToUpgrade: boolean, LastErr: string, Log: Array<SectorLog>, SealProof: number, Activation: number, Expiration: number, DealWeight: string, VerifiedDealWeight: string, InitialPledge: string, OnTime: number, Early: number }
-declare type StorageInfo = { ID: string, URLs: Array<string>, Weight: number, CanSeal: boolean, CanStore: boolean }
-declare type FsStat = { Capacity: number, Available: number, Reserved: number }
-declare type SectorID = { Miner: number, Number: number }
+declare type StorageInfo = { ID: string, URLs: Array<string>, Weight: number, MaxStorage: number, CanSeal: boolean, CanStore: boolean }
+declare type FsStat = { Capacity: number, Available: number, FSAvailable: number, Reserved: number, Max: number, Used: number }
 declare type SectorStorageInfo = { ID: string, URLs: Array<string>, Weight: number, CanSeal: boolean, CanStore: boolean, Primary: boolean }
 declare type Decl = { SectorID: SectorID, SectorFileType: number }
-declare type HealthReport = { Stat: FsStat, Err: any }
-declare type WorkerJob = { ID: number, Sector: SectorID, Task: string, RunWait: number, Start: Time }
+declare type HealthReport = { Stat: FsStat, Err: string }
+declare type WorkerJob = { ID: CallID, Sector: SectorID, Task: string, RunWait: number, Start: Time, Hostname: string }
 declare type WorkerResources = { MemPhysical: number, MemSwap: number, MemReserved: number, CPUs: number, GPUs: Array<string> }
 declare type WorkerInfo = { Hostname: string, Resources: WorkerResources }
-declare type WorkerStats = { Info: WorkerInfo, MemUsedMin: number, MemUsedMax: number, GpuUsed: boolean, CpuUse: number }
-declare type PieceInfo1 = { Size: number, PieceCID: Cid }
+declare type WorkerStats = { Info: WorkerInfo, Enabled: boolean, MemUsedMin: number, MemUsedMax: number, GpuUsed: boolean, CpuUse: number }
 declare type Range = { Offset: number, Size: number }
 declare type StoragePath = { ID: string, Weight: number, LocalPath: string, CanSeal: boolean, CanStore: boolean }
-declare type SectorCids = { Unsealed: Cid, Sealed: Cid }
 declare class LotusRPC {
-  constructor (provider: any, options: { schema: any })
-  authNew (permission: Array<string>): Promise<string>
-  authVerify (str: string): Promise<Array<string>>
-  closing (handler: (data: {}) => void): [() => void, Promise<void>]
-  id (): Promise<string>
-  logList (): Promise<Array<string>>
-  logSetLevel (str: string, str1: string): Promise<void>
-  netAddrsListen (): Promise<AddrInfo>
-  netAgentVersion (id: string): Promise<string>
-  netAutoNatStatus (): Promise<NatInfo>
-  netBandwidthStats (): Promise<Stats>
-  netBandwidthStatsByPeer (): Promise<{ [k: string]: Stats }>
-  netBandwidthStatsByProtocol (): Promise<{ [k: string]: Stats }>
-  netConnect (addrInfo: AddrInfo): Promise<void>
-  netConnectedness (id: string): Promise<number>
-  netDisconnect (id: string): Promise<void>
-  netFindPeer (id: string): Promise<AddrInfo>
-  netPeers (): Promise<Array<AddrInfo>>
-  netPubsubScores (): Promise<Array<PubsubScore>>
-  shutdown (): Promise<void>
+  constructor(provider: any, options: { schema: any })
+  authNew(permission: Array<string>): Promise<string>
+  authVerify(str: string): Promise<Array<string>>
+  closing(handler: (data: {}) => void): [() => void, Promise<void>]
+  id(): Promise<string>
+  logList(): Promise<Array<string>>
+  logSetLevel(str: string, str1: string): Promise<void>
+  netAddrsListen(): Promise<AddrInfo>
+  netAgentVersion(id: string): Promise<string>
+  netAutoNatStatus(): Promise<NatInfo>
+  netBandwidthStats(): Promise<Stats>
+  netBandwidthStatsByPeer(): Promise<{ [k: string]: Stats }>
+  netBandwidthStatsByProtocol(): Promise<{ [k: string]: Stats }>
+  netBlockAdd(netBlockList: NetBlockList): Promise<void>
+  netBlockList(): Promise<NetBlockList>
+  netBlockRemove(netBlockList: NetBlockList): Promise<void>
+  netConnect(addrInfo: AddrInfo): Promise<void>
+  netConnectedness(id: string): Promise<number>
+  netDisconnect(id: string): Promise<void>
+  netFindPeer(id: string): Promise<AddrInfo>
+  netPeerInfo(id: string): Promise<ExtendedPeerInfo>
+  netPeers(): Promise<Array<AddrInfo>>
+  netPubsubScores(): Promise<Array<PubsubScore>>
+  /**
+   * like ProcessSession, but returns an error when worker is disabled
+   */
+  session(): Promise<Array<number>>
+  shutdown(): Promise<void>
   /**
    * tODO: Info() (name, ...) ?
    */
-  version (): Promise<Version>
+  version(): Promise<APIVersion>
   /**
    * beaconGetEntry returns the beacon entry for the given filecoin epoch. If
    * the entry has not yet been produced, the call will block until the entry
    * becomes available
    */
-  beaconGetEntry (chainEpoch: number): Promise<BeaconEntry>
+  beaconGetEntry(chainEpoch: number): Promise<BeaconEntry>
   /**
    * chainDeleteObj deletes node referenced by the given CID
    */
-  chainDeleteObj (cid: Cid): Promise<void>
+  chainDeleteObj(cid: Cid): Promise<void>
   /**
    * chainExport returns a stream of bytes with CAR dump of chain data.
    * The exported chain data includes the header chain from the given tipset
@@ -165,35 +183,35 @@ declare class LotusRPC {
    * state trees.
    * If oldmsgskip is set, messages from before the requested roots are also not included.
    */
-  chainExport (handler: (data: string) => void, chainEpoch: number, bool: boolean, tipSetKey: Cid[]): [() => void, Promise<void>]
+  chainExport(handler: (data: string) => void, chainEpoch: number, bool: boolean, tipSetKey: Cid[]): [() => void, Promise<void>]
   /**
    * chainGetBlock returns the block specified by the given CID.
    */
-  chainGetBlock (cid: Cid): Promise<BlockHeader>
+  chainGetBlock(cid: Cid): Promise<BlockHeader>
   /**
    * chainGetBlockMessages returns messages stored in the specified block.
    */
-  chainGetBlockMessages (cid: Cid): Promise<BlockMessages>
+  chainGetBlockMessages(cid: Cid): Promise<BlockMessages>
   /**
    * chainGetGenesis returns the genesis tipset.
    */
-  chainGetGenesis (): Promise<TipSet>
+  chainGetGenesis(): Promise<TipSet>
   /**
    * chainGetMessage reads a message referenced by the specified CID from the
    * chain blockstore.
    */
-  chainGetMessage (cid: Cid): Promise<Message>
-  chainGetNode (str: string): Promise<IpldObject>
+  chainGetMessage(cid: Cid): Promise<Message>
+  chainGetNode(str: string): Promise<IpldObject>
   /**
    * chainGetParentMessages returns messages stored in parent tipset of the
    * specified block.
    */
-  chainGetParentMessages (cid: Cid): Promise<Array<Message1>>
+  chainGetParentMessages(cid: Cid): Promise<Array<Message1>>
   /**
    * chainGetParentReceipts returns receipts for messages in parent tipset of
    * the specified block.
    */
-  chainGetParentReceipts (cid: Cid): Promise<Array<MessageReceipt>>
+  chainGetParentReceipts(cid: Cid): Promise<Array<MessageReceipt>>
   /**
    * chainGetPath returns a set of revert/apply operations needed to get from
    * one tipset to another, for example:
@@ -209,204 +227,228 @@ declare class LotusRPC {
    * ```
    * Would return `[revert(tBA), apply(tAB), apply(tAA)]`
    */
-  chainGetPath (tipSetKey: Cid[], tipSetKey1: Cid[]): Promise<Array<HeadChange>>
+  chainGetPath(tipSetKey: Cid[], tipSetKey1: Cid[]): Promise<Array<HeadChange>>
   /**
    * chainGetRandomnessFromBeacon is used to sample the beacon for randomness.
    */
-  chainGetRandomnessFromBeacon (tipSetKey: Cid[], domainSeparationTag: number, chainEpoch: number, bytes: string): Promise<string>
+  chainGetRandomnessFromBeacon(tipSetKey: Cid[], domainSeparationTag: number, chainEpoch: number, bytes: string): Promise<string>
   /**
    * chainGetRandomnessFromTickets is used to sample the chain for randomness.
    */
-  chainGetRandomnessFromTickets (tipSetKey: Cid[], domainSeparationTag: number, chainEpoch: number, bytes: string): Promise<string>
+  chainGetRandomnessFromTickets(tipSetKey: Cid[], domainSeparationTag: number, chainEpoch: number, bytes: string): Promise<string>
   /**
    * chainGetTipSet returns the tipset specified by the given TipSetKey.
    */
-  chainGetTipSet (tipSetKey: Cid[]): Promise<TipSet>
+  chainGetTipSet(tipSetKey: Cid[]): Promise<TipSet>
   /**
    * chainGetTipSetByHeight looks back for a tipset at the specified epoch.
    * If there are no blocks at the specified epoch, a tipset at an earlier epoch
    * will be returned.
    */
-  chainGetTipSetByHeight (chainEpoch: number, tipSetKey: Cid[]): Promise<TipSet>
+  chainGetTipSetByHeight(chainEpoch: number, tipSetKey: Cid[]): Promise<TipSet>
   /**
    * chainHasObj checks if a given CID exists in the chain blockstore.
    */
-  chainHasObj (cid: Cid): Promise<boolean>
+  chainHasObj(cid: Cid): Promise<boolean>
   /**
    * chainHead returns the current head of the chain.
    */
-  chainHead (): Promise<TipSet>
+  chainHead(): Promise<TipSet>
   /**
    * chainNotify returns channel with chain head updates.
    * First message is guaranteed to be of len == 1, and type == 'current'.
    */
-  chainNotify (handler: (data: Array<HeadChange>) => void): [() => void, Promise<void>]
+  chainNotify(handler: (data: Array<HeadChange>) => void): [() => void, Promise<void>]
   /**
    * chainReadObj reads ipld nodes referenced by the specified CID from chain
    * blockstore and returns raw bytes.
    */
-  chainReadObj (cid: Cid): Promise<string>
+  chainReadObj(cid: Cid): Promise<string>
   /**
    * chainSetHead forcefully sets current chain head. Use with caution.
    */
-  chainSetHead (tipSetKey: Cid[]): Promise<void>
+  chainSetHead(tipSetKey: Cid[]): Promise<void>
   /**
    * chainStatObj returns statistics about the graph referenced by 'obj'.
    * If 'base' is also specified, then the returned stat will be a diff
    * between the two objects.
    */
-  chainStatObj (cid: Cid, cid1: Cid): Promise<ObjStat>
+  chainStatObj(cid: Cid, cid1: Cid): Promise<ObjStat>
   /**
    * chainTipSetWeight computes weight for the specified tipset.
    */
-  chainTipSetWeight (tipSetKey: Cid[]): Promise<string>
+  chainTipSetWeight(tipSetKey: Cid[]): Promise<string>
   /**
    * clientCalcCommP calculates the CommP for a specified file
    */
-  clientCalcCommP (str: string): Promise<CommPRet>
-  clientDataTransferUpdates (handler: (data: DataTransferChannel) => void): [() => void, Promise<void>]
+  clientCalcCommP(str: string): Promise<CommPRet>
+  /**
+   * clientCancelDataTransfer cancels a data transfer with the given transfer ID and other peer
+   */
+  clientCancelDataTransfer(transferID: number, id: string, bool: boolean): Promise<void>
+  clientDataTransferUpdates(handler: (data: DataTransferChannel) => void): [() => void, Promise<void>]
+  /**
+   * clientCalcCommP calculates the CommP and data size of the specified CID
+   */
+  clientDealPieceCID(cid: Cid): Promise<DataCIDSize>
   /**
    * clientDealSize calculates real deal data size
    */
-  clientDealSize (cid: Cid): Promise<DataSize>
+  clientDealSize(cid: Cid): Promise<DataSize>
   /**
    * clientFindData identifies peers that have a certain file, and returns QueryOffers (one per peer).
    */
-  clientFindData (cid: Cid, cid1: Cid): Promise<Array<QueryOffer>>
+  clientFindData(cid: Cid, cid1: Cid): Promise<Array<QueryOffer>>
   /**
    * clientGenCar generates a CAR file for the specified file.
    */
-  clientGenCar (fileRef: FileRef, str: string): Promise<void>
+  clientGenCar(fileRef: FileRef, str: string): Promise<void>
   /**
    * clientGetDealInfo returns the latest information about a given deal.
    */
-  clientGetDealInfo (cid: Cid): Promise<DealInfo>
+  clientGetDealInfo(cid: Cid): Promise<DealInfo>
   /**
    * clientGetDealStatus returns status given a code
    */
-  clientGetDealStatus (uint: number): Promise<string>
+  clientGetDealStatus(uint: number): Promise<string>
   /**
    * clientGetDealUpdates returns the status of updated deals
    */
-  clientGetDealUpdates (handler: (data: DealInfo) => void): [() => void, Promise<void>]
+  clientGetDealUpdates(handler: (data: DealInfo) => void): [() => void, Promise<void>]
   /**
    * clientHasLocal indicates whether a certain CID is locally stored.
    */
-  clientHasLocal (cid: Cid): Promise<boolean>
+  clientHasLocal(cid: Cid): Promise<boolean>
   /**
    * clientImport imports file under the specified path into filestore.
    */
-  clientImport (fileRef: FileRef): Promise<ImportRes>
+  clientImport(fileRef: FileRef): Promise<ImportRes>
   /**
    * clientListTransfers returns the status of all ongoing transfers of data
    */
-  clientListDataTransfers (): Promise<Array<DataTransferChannel>>
+  clientListDataTransfers(): Promise<Array<DataTransferChannel>>
   /**
    * clientListDeals returns information about the deals made by the local client.
    */
-  clientListDeals (): Promise<Array<DealInfo>>
+  clientListDeals(): Promise<Array<DealInfo>>
   /**
    * clientListImports lists imported files and their root CIDs
    */
-  clientListImports (): Promise<Array<Import>>
+  clientListImports(): Promise<Array<Import>>
   /**
    * clientMinerQueryOffer returns a QueryOffer for the specific miner and file.
    */
-  clientMinerQueryOffer (address: string, cid: Cid, cid1: Cid): Promise<QueryOffer>
+  clientMinerQueryOffer(address: string, cid: Cid, cid1: Cid): Promise<QueryOffer>
   /**
    * clientQueryAsk returns a signed StorageAsk from the specified miner.
    */
-  clientQueryAsk (id: string, address: string): Promise<StorageAsk>
+  clientQueryAsk(id: string, address: string): Promise<StorageAsk>
   /**
    * clientRemoveImport removes file import
    */
-  clientRemoveImport (storeID: number): Promise<void>
+  clientRemoveImport(storeID: number): Promise<void>
   /**
    * clientRestartDataTransfer attempts to restart a data transfer with the given transfer ID and other peer
    */
-  clientRestartDataTransfer (transferID: number, id: string, bool: boolean): Promise<void>
+  clientRestartDataTransfer(transferID: number, id: string, bool: boolean): Promise<void>
   /**
    * clientRetrieve initiates the retrieval of a file, as specified in the order.
    */
-  clientRetrieve (retrievalOrder: RetrievalOrder, fileRef: FileRef): Promise<void>
+  clientRetrieve(retrievalOrder: RetrievalOrder, fileRef: FileRef): Promise<void>
   /**
    * clientRetrieveTryRestartInsufficientFunds attempts to restart stalled retrievals on a given payment channel
    * which are stuck due to insufficient funds
    */
-  clientRetrieveTryRestartInsufficientFunds (address: string): Promise<void>
+  clientRetrieveTryRestartInsufficientFunds(address: string): Promise<void>
   /**
    * clientRetrieveWithEvents initiates the retrieval of a file, as specified in the order, and provides a channel
    * of status updates.
    */
-  clientRetrieveWithEvents (handler: (data: RetrievalEvent) => void, retrievalOrder: RetrievalOrder, fileRef: FileRef): [() => void, Promise<void>]
+  clientRetrieveWithEvents(handler: (data: RetrievalEvent) => void, retrievalOrder: RetrievalOrder, fileRef: FileRef): [() => void, Promise<void>]
   /**
    * clientStartDeal proposes a deal with a miner.
    */
-  clientStartDeal (startDealParams: StartDealParams): Promise<Cid>
+  clientStartDeal(startDealParams: StartDealParams): Promise<Cid>
   /**
    * createBackup creates node backup onder the specified file name. The
    * method requires that the lotus daemon is running with the
    * LOTUS_BACKUP_BASE_PATH environment variable set to some path, and that
    * the path specified when calling CreateBackup is within the base path
    */
-  createBackup (str: string): Promise<void>
+  createBackup(str: string): Promise<void>
   /**
    * gasEstimateFeeCap estimates gas fee cap
    */
-  gasEstimateFeeCap (message: Message, int: number, tipSetKey: Cid[]): Promise<string>
+  gasEstimateFeeCap(message: Message, int: number, tipSetKey: Cid[]): Promise<string>
   /**
    * gasEstimateGasLimit estimates gas used by the message and returns it.
    * It fails if message fails to execute.
    */
-  gasEstimateGasLimit (message: Message, tipSetKey: Cid[]): Promise<number>
+  gasEstimateGasLimit(message: Message, tipSetKey: Cid[]): Promise<number>
   /**
    * gasEstimateGasPremium estimates what gas price should be used for a
    * message to have high likelihood of inclusion in `nblocksincl` epochs.
    */
-  gasEstimateGasPremium (uint: number, address: string, int: number, tipSetKey: Cid[]): Promise<string>
+  gasEstimateGasPremium(uint: number, address: string, int: number, tipSetKey: Cid[]): Promise<string>
   /**
    * gasEstimateMessageGas estimates gas values for unset message gas fields
    */
-  gasEstimateMessageGas (message: Message, messageSendSpec: MessageSendSpec, tipSetKey: Cid[]): Promise<Message>
+  gasEstimateMessageGas(message: Message, messageSendSpec: MessageSendSpec, tipSetKey: Cid[]): Promise<Message>
   /**
-   * marketFreeBalance
+   * marketAddBalance adds funds to the market actor
    */
-  marketEnsureAvailable (address: string, address1: string, bigInt: string): Promise<Cid>
-  minerCreateBlock (blockTemplate: BlockTemplate): Promise<BlockMsg>
-  minerGetBaseInfo (address: string, chainEpoch: number, tipSetKey: Cid[]): Promise<MiningBaseInfo>
+  marketAddBalance(address: string, address1: string, bigInt: string): Promise<Cid>
+  /**
+   * marketGetReserved gets the amount of funds that are currently reserved for the address
+   */
+  marketGetReserved(address: string): Promise<string>
+  /**
+   * marketReleaseFunds releases funds reserved by MarketReserveFunds
+   */
+  marketReleaseFunds(address: string, bigInt: string): Promise<void>
+  /**
+   * marketReserveFunds reserves funds for a deal
+   */
+  marketReserveFunds(address: string, address1: string, bigInt: string): Promise<Cid>
+  /**
+   * marketWithdraw withdraws unlocked funds from the market actor
+   */
+  marketWithdraw(address: string, address1: string, bigInt: string): Promise<Cid>
+  minerCreateBlock(blockTemplate: BlockTemplate): Promise<BlockMsg>
+  minerGetBaseInfo(address: string, chainEpoch: number, tipSetKey: Cid[]): Promise<MiningBaseInfo>
   /**
    * mpoolBatchPush batch pushes a signed message to mempool.
    */
-  mpoolBatchPush (signedMessage: Array<SignedMessage>): Promise<Array<Cid>>
+  mpoolBatchPush(signedMessage: Array<SignedMessage>): Promise<Array<Cid>>
   /**
    * mpoolBatchPushMessage batch pushes a unsigned message to mempool.
    */
-  mpoolBatchPushMessage (message: Array<Message>, messageSendSpec: MessageSendSpec): Promise<Array<SignedMessage>>
+  mpoolBatchPushMessage(message: Array<Message>, messageSendSpec: MessageSendSpec): Promise<Array<SignedMessage>>
   /**
    * mpoolBatchPushUntrusted batch pushes a signed message to mempool from untrusted sources.
    */
-  mpoolBatchPushUntrusted (signedMessage: Array<SignedMessage>): Promise<Array<Cid>>
+  mpoolBatchPushUntrusted(signedMessage: Array<SignedMessage>): Promise<Array<Cid>>
   /**
    * mpoolClear clears pending messages from the mpool
    */
-  mpoolClear (bool: boolean): Promise<void>
+  mpoolClear(bool: boolean): Promise<void>
   /**
    * mpoolGetConfig returns (a copy of) the current mpool config
    */
-  mpoolGetConfig (): Promise<MpoolConfig>
+  mpoolGetConfig(): Promise<MpoolConfig>
   /**
    * mpoolGetNonce gets next nonce for the specified sender.
    * Note that this method may not be atomic. Use MpoolPushMessage instead.
    */
-  mpoolGetNonce (address: string): Promise<number>
+  mpoolGetNonce(address: string): Promise<number>
   /**
    * mpoolPending returns pending mempool messages.
    */
-  mpoolPending (tipSetKey: Cid[]): Promise<Array<SignedMessage>>
+  mpoolPending(tipSetKey: Cid[]): Promise<Array<SignedMessage>>
   /**
    * mpoolPush pushes a signed message to mempool.
    */
-  mpoolPush (signedMessage: SignedMessage): Promise<Cid>
+  mpoolPush(signedMessage: SignedMessage): Promise<Cid>
   /**
    * mpoolPushMessage atomically assigns a nonce, signs, and pushes a message
    * to mempool.
@@ -415,43 +457,43 @@ declare class LotusRPC {
    * When maxFee is set to 0, MpoolPushMessage will guess appropriate fee
    * based on current chain conditions
    */
-  mpoolPushMessage (message: Message, messageSendSpec: MessageSendSpec): Promise<SignedMessage>
+  mpoolPushMessage(message: Message, messageSendSpec: MessageSendSpec): Promise<SignedMessage>
   /**
    * mpoolPushUntrusted pushes a signed message to mempool from untrusted sources.
    */
-  mpoolPushUntrusted (signedMessage: SignedMessage): Promise<Cid>
+  mpoolPushUntrusted(signedMessage: SignedMessage): Promise<Cid>
   /**
    * mpoolSelect returns a list of pending messages for inclusion in the next block
    */
-  mpoolSelect (tipSetKey: Cid[], num: number): Promise<Array<SignedMessage>>
+  mpoolSelect(tipSetKey: Cid[], num: number): Promise<Array<SignedMessage>>
   /**
    * mpoolSetConfig sets the mpool config to (a copy of) the supplied config
    */
-  mpoolSetConfig (mpoolConfig: MpoolConfig): Promise<void>
-  mpoolSub (handler: (data: MpoolUpdate) => void): [() => void, Promise<void>]
+  mpoolSetConfig(mpoolConfig: MpoolConfig): Promise<void>
+  mpoolSub(handler: (data: MpoolUpdate) => void): [() => void, Promise<void>]
   /**
    * msigAddApprove approves a previously proposed AddSigner message
    * It takes the following params: <multisig address>, <sender address of the approve msg>, <proposed message ID>,
    * <proposer address>, <new signer>, <whether the number of required signers should be increased>
    */
-  msigAddApprove (address: string, address1: string, uint: number, address2: string, address3: string, bool: boolean): Promise<Cid>
+  msigAddApprove(address: string, address1: string, uint: number, address2: string, address3: string, bool: boolean): Promise<Cid>
   /**
    * msigAddCancel cancels a previously proposed AddSigner message
    * It takes the following params: <multisig address>, <sender address of the cancel msg>, <proposed message ID>,
    * <new signer>, <whether the number of required signers should be increased>
    */
-  msigAddCancel (address: string, address1: string, uint: number, address2: string, bool: boolean): Promise<Cid>
+  msigAddCancel(address: string, address1: string, uint: number, address2: string, bool: boolean): Promise<Cid>
   /**
    * msigAddPropose proposes adding a signer in the multisig
    * It takes the following params: <multisig address>, <sender address of the propose msg>,
    * <new signer>, <whether the number of required signers should be increased>
    */
-  msigAddPropose (address: string, address1: string, address2: string, bool: boolean): Promise<Cid>
+  msigAddPropose(address: string, address1: string, address2: string, bool: boolean): Promise<Cid>
   /**
    * msigApprove approves a previously-proposed multisig message by transaction ID
    * It takes the following params: <multisig address>, <proposed transaction ID> <signer address>
    */
-  msigApprove (address: string, uint: number, address1: string): Promise<Cid>
+  msigApprove(address: string, uint: number, address1: string): Promise<Cid>
   /**
    * msigApproveTxnHash approves a previously-proposed multisig message, specified
    * using both transaction ID and a hash of the parameters used in the
@@ -460,38 +502,44 @@ declare class LotusRPC {
    * It takes the following params: <multisig address>, <proposed message ID>, <proposer address>, <recipient address>, <value to transfer>,
    * <sender address of the approve msg>, <method to call in the proposed message>, <params to include in the proposed message>
    */
-  msigApproveTxnHash (address: string, uint: number, address1: string, address2: string, bigInt: string, address3: string, uint1: number, bytes: string): Promise<Cid>
+  msigApproveTxnHash(address: string, uint: number, address1: string, address2: string, bigInt: string, address3: string, uint1: number, bytes: string): Promise<Cid>
   /**
    * msigCancel cancels a previously-proposed multisig message
    * It takes the following params: <multisig address>, <proposed transaction ID>, <recipient address>, <value to transfer>,
    * <sender address of the cancel msg>, <method to call in the proposed message>, <params to include in the proposed message>
    */
-  msigCancel (address: string, uint: number, address1: string, bigInt: string, address2: string, uint1: number, bytes: string): Promise<Cid>
+  msigCancel(address: string, uint: number, address1: string, bigInt: string, address2: string, uint1: number, bytes: string): Promise<Cid>
   /**
    * msigCreate creates a multisig wallet
    * It takes the following params: <required number of senders>, <approving addresses>, <unlock duration>
    * <initial balance>, <sender address of the create msg>, <gas price>
    */
-  msigCreate (uint: number, address: Array<string>, chainEpoch: number, bigInt: string, address1: string, bigInt1: string): Promise<Cid>
+  msigCreate(uint: number, address: Array<string>, chainEpoch: number, bigInt: string, address1: string, bigInt1: string): Promise<Cid>
   /**
    * msigGetAvailableBalance returns the portion of a multisig's balance that can be withdrawn or spent
    */
-  msigGetAvailableBalance (address: string, tipSetKey: Cid[]): Promise<string>
+  msigGetAvailableBalance(address: string, tipSetKey: Cid[]): Promise<string>
+  /**
+   * msigGetPending returns pending transactions for the given multisig
+   * wallet. Once pending transactions are fully approved, they will no longer
+   * appear here.
+   */
+  msigGetPending(address: string, tipSetKey: Cid[]): Promise<Array<MsigTransaction>>
   /**
    * msigGetVested returns the amount of FIL that vested in a multisig in a certain period.
    * It takes the following params: <multisig address>, <start epoch>, <end epoch>
    */
-  msigGetVested (address: string, tipSetKey: Cid[], tipSetKey1: Cid[]): Promise<string>
+  msigGetVested(address: string, tipSetKey: Cid[], tipSetKey1: Cid[]): Promise<string>
   /**
    * msigGetVestingSchedule returns the vesting details of a given multisig.
    */
-  msigGetVestingSchedule (address: string, tipSetKey: Cid[]): Promise<MsigVesting>
+  msigGetVestingSchedule(address: string, tipSetKey: Cid[]): Promise<MsigVesting>
   /**
    * msigPropose proposes a multisig message
    * It takes the following params: <multisig address>, <recipient address>, <value to transfer>,
    * <sender address of the propose msg>, <method to call in the proposed message>, <params to include in the proposed message>
    */
-  msigPropose (address: string, address1: string, bigInt: string, address2: string, uint: number, bytes: string): Promise<Cid>
+  msigPropose(address: string, address1: string, bigInt: string, address2: string, uint: number, bytes: string): Promise<Cid>
   /**
    * msigRemoveSigner proposes the removal of a signer from the multisig.
    * It accepts the multisig to make the change on, the proposer address to
@@ -499,443 +547,533 @@ declare class LotusRPC {
    * indicating whether or not the signing threshold should be lowered by one
    * along with the address removal.
    */
-  msigRemoveSigner (address: string, address1: string, address2: string, bool: boolean): Promise<Cid>
+  msigRemoveSigner(address: string, address1: string, address2: string, bool: boolean): Promise<Cid>
   /**
    * msigSwapApprove approves a previously proposed SwapSigner
    * It takes the following params: <multisig address>, <sender address of the approve msg>, <proposed message ID>,
    * <proposer address>, <old signer>, <new signer>
    */
-  msigSwapApprove (address: string, address1: string, uint: number, address2: string, address3: string, address4: string): Promise<Cid>
+  msigSwapApprove(address: string, address1: string, uint: number, address2: string, address3: string, address4: string): Promise<Cid>
   /**
    * msigSwapCancel cancels a previously proposed SwapSigner message
    * It takes the following params: <multisig address>, <sender address of the cancel msg>, <proposed message ID>,
    * <old signer>, <new signer>
    */
-  msigSwapCancel (address: string, address1: string, uint: number, address2: string, address3: string): Promise<Cid>
+  msigSwapCancel(address: string, address1: string, uint: number, address2: string, address3: string): Promise<Cid>
   /**
    * msigSwapPropose proposes swapping 2 signers in the multisig
    * It takes the following params: <multisig address>, <sender address of the propose msg>,
    * <old signer>, <new signer>
    */
-  msigSwapPropose (address: string, address1: string, address2: string, address3: string): Promise<Cid>
-  paychAllocateLane (address: string): Promise<number>
-  paychAvailableFunds (address: string): Promise<ChannelAvailableFunds>
-  paychAvailableFundsByFromTo (address: string, address1: string): Promise<ChannelAvailableFunds>
-  paychCollect (address: string): Promise<Cid>
-  paychGet (address: string, address1: string, bigInt: string): Promise<ChannelInfo>
-  paychGetWaitReady (cid: Cid): Promise<string>
-  paychList (): Promise<Array<string>>
-  paychNewPayment (address: string, address1: string, voucherSpec: Array<VoucherSpec>): Promise<PaymentInfo>
-  paychSettle (address: string): Promise<Cid>
-  paychStatus (address: string): Promise<PaychStatus>
-  paychVoucherAdd (address: string, signedVoucher: SignedVoucher, bytes: string, bigInt: string): Promise<string>
-  paychVoucherCheckSpendable (address: string, signedVoucher: SignedVoucher, bytes: string, bytes1: string): Promise<boolean>
-  paychVoucherCheckValid (address: string, signedVoucher: SignedVoucher): Promise<void>
-  paychVoucherCreate (address: string, bigInt: string, uint: number): Promise<VoucherCreateResult>
-  paychVoucherList (address: string): Promise<Array<SignedVoucher>>
-  paychVoucherSubmit (address: string, signedVoucher: SignedVoucher, bytes: string, bytes1: string): Promise<Cid>
+  msigSwapPropose(address: string, address1: string, address2: string, address3: string): Promise<Cid>
+  paychAllocateLane(address: string): Promise<number>
+  paychAvailableFunds(address: string): Promise<ChannelAvailableFunds>
+  paychAvailableFundsByFromTo(address: string, address1: string): Promise<ChannelAvailableFunds>
+  paychCollect(address: string): Promise<Cid>
+  paychGet(address: string, address1: string, bigInt: string): Promise<ChannelInfo>
+  paychGetWaitReady(cid: Cid): Promise<string>
+  paychList(): Promise<Array<string>>
+  paychNewPayment(address: string, address1: string, voucherSpec: Array<VoucherSpec>): Promise<PaymentInfo>
+  paychSettle(address: string): Promise<Cid>
+  paychStatus(address: string): Promise<PaychStatus>
+  paychVoucherAdd(address: string, signedVoucher: SignedVoucher, bytes: string, bigInt: string): Promise<string>
+  paychVoucherCheckSpendable(address: string, signedVoucher: SignedVoucher, bytes: string, bytes1: string): Promise<boolean>
+  paychVoucherCheckValid(address: string, signedVoucher: SignedVoucher): Promise<void>
+  paychVoucherCreate(address: string, bigInt: string, uint: number): Promise<VoucherCreateResult>
+  paychVoucherList(address: string): Promise<Array<SignedVoucher>>
+  paychVoucherSubmit(address: string, signedVoucher: SignedVoucher, bytes: string, bytes1: string): Promise<Cid>
   /**
    * stateAccountKey returns the public key address of the given ID address
    */
-  stateAccountKey (address: string, tipSetKey: Cid[]): Promise<string>
+  stateAccountKey(address: string, tipSetKey: Cid[]): Promise<string>
   /**
    * stateAllMinerFaults returns all non-expired Faults that occur within lookback epochs of the given tipset
    */
-  stateAllMinerFaults (chainEpoch: number, tipSetKey: Cid[]): Promise<Array<Fault>>
+  stateAllMinerFaults(chainEpoch: number, tipSetKey: Cid[]): Promise<Array<Fault>>
   /**
    * stateCall runs the given message and returns its result without any persisted changes.
+   * 
+   * StateCall applies the message to the tipset's parent state. The
+   * message is not applied on-top-of the messages in the passed-in
+   * tipset.
    */
-  stateCall (message: Message, tipSetKey: Cid[]): Promise<InvocResult>
+  stateCall(message: Message, tipSetKey: Cid[]): Promise<InvocResult>
   /**
    * stateChangedActors returns all the actors whose states change between the two given state CIDs
    * TODO: Should this take tipset keys instead?
    */
-  stateChangedActors (cid: Cid, cid1: Cid): Promise<{ [k: string]: Actor }>
+  stateChangedActors(cid: Cid, cid1: Cid): Promise<{ [k: string]: Actor }>
   /**
    * stateCirculatingSupply returns the exact circulating supply of Filecoin at the given tipset.
    * This is not used anywhere in the protocol itself, and is only for external consumption.
    */
-  stateCirculatingSupply (tipSetKey: Cid[]): Promise<string>
+  stateCirculatingSupply(tipSetKey: Cid[]): Promise<string>
   /**
    * stateCompute is a flexible command that applies the given messages on the given tipset.
    * The messages are run as though the VM were at the provided height.
    */
-  stateCompute (chainEpoch: number, message: Array<Message>, tipSetKey: Cid[]): Promise<ComputeStateOutput>
+  stateCompute(chainEpoch: number, message: Array<Message>, tipSetKey: Cid[]): Promise<ComputeStateOutput>
   /**
    * stateDealProviderCollateralBounds returns the min and max collateral a storage provider
    * can issue. It takes the deal size and verified status as parameters.
    */
-  stateDealProviderCollateralBounds (paddedPieceSize: number, bool: boolean, tipSetKey: Cid[]): Promise<DealCollateralBounds>
+  stateDealProviderCollateralBounds(paddedPieceSize: number, bool: boolean, tipSetKey: Cid[]): Promise<DealCollateralBounds>
+  /**
+   * stateDecodeParams attempts to decode the provided params, based on the recipient actor address and method number.
+   */
+  stateDecodeParams(address: string, methodNum: number, bytes: string, tipSetKey: Cid[]): Promise<any>
   /**
    * stateGetActor returns the indicated actor's nonce and balance.
    */
-  stateGetActor (address: string, tipSetKey: Cid[]): Promise<Actor>
+  stateGetActor(address: string, tipSetKey: Cid[]): Promise<Actor>
   /**
    * stateGetReceipt returns the message receipt for the given message
    */
-  stateGetReceipt (cid: Cid, tipSetKey: Cid[]): Promise<MessageReceipt>
+  stateGetReceipt(cid: Cid, tipSetKey: Cid[]): Promise<MessageReceipt>
   /**
    * stateListActors returns the addresses of every actor in the state
    */
-  stateListActors (tipSetKey: Cid[]): Promise<Array<string>>
+  stateListActors(tipSetKey: Cid[]): Promise<Array<string>>
   /**
    * stateListMessages looks back and returns all messages with a matching to or from address, stopping at the given height.
    */
-  stateListMessages (messageMatch: MessageMatch, tipSetKey: Cid[], chainEpoch: number): Promise<Array<Cid>>
+  stateListMessages(messageMatch: MessageMatch, tipSetKey: Cid[], chainEpoch: number): Promise<Array<Cid>>
   /**
    * stateListMiners returns the addresses of every miner that has claimed power in the Power Actor
    */
-  stateListMiners (tipSetKey: Cid[]): Promise<Array<string>>
+  stateListMiners(tipSetKey: Cid[]): Promise<Array<string>>
   /**
    * stateLookupID retrieves the ID address of the given address
    */
-  stateLookupID (address: string, tipSetKey: Cid[]): Promise<string>
+  stateLookupID(address: string, tipSetKey: Cid[]): Promise<string>
   /**
    * stateMarketBalance looks up the Escrow and Locked balances of the given address in the Storage Market
    */
-  stateMarketBalance (address: string, tipSetKey: Cid[]): Promise<MarketBalance>
+  stateMarketBalance(address: string, tipSetKey: Cid[]): Promise<MarketBalance>
   /**
    * stateMarketDeals returns information about every deal in the Storage Market
    */
-  stateMarketDeals (tipSetKey: Cid[]): Promise<{ [k: string]: MarketDeal }>
+  stateMarketDeals(tipSetKey: Cid[]): Promise<{ [k: string]: MarketDeal }>
   /**
    * stateMarketParticipants returns the Escrow and Locked balances of every participant in the Storage Market
    */
-  stateMarketParticipants (tipSetKey: Cid[]): Promise<{ [k: string]: MarketBalance }>
+  stateMarketParticipants(tipSetKey: Cid[]): Promise<{ [k: string]: MarketBalance }>
   /**
    * stateMarketStorageDeal returns information about the indicated deal
    */
-  stateMarketStorageDeal (dealID: number, tipSetKey: Cid[]): Promise<MarketDeal>
+  stateMarketStorageDeal(dealID: number, tipSetKey: Cid[]): Promise<MarketDeal>
   /**
    * stateMinerActiveSectors returns info about sectors that a given miner is actively proving.
    */
-  stateMinerActiveSectors (address: string, tipSetKey: Cid[]): Promise<Array<SectorOnChainInfo>>
+  stateMinerActiveSectors(address: string, tipSetKey: Cid[]): Promise<Array<SectorOnChainInfo>>
   /**
    * stateMinerAvailableBalance returns the portion of a miner's balance that can be withdrawn or spent
    */
-  stateMinerAvailableBalance (address: string, tipSetKey: Cid[]): Promise<string>
+  stateMinerAvailableBalance(address: string, tipSetKey: Cid[]): Promise<string>
   /**
    * stateMinerDeadlines returns all the proving deadlines for the given miner
    */
-  stateMinerDeadlines (address: string, tipSetKey: Cid[]): Promise<Array<Deadline>>
+  stateMinerDeadlines(address: string, tipSetKey: Cid[]): Promise<Array<Deadline>>
   /**
    * stateMinerFaults returns a bitfield indicating the faulty sectors of the given miner
    */
-  stateMinerFaults (address: string, tipSetKey: Cid[]): Promise<BitField>
+  stateMinerFaults(address: string, tipSetKey: Cid[]): Promise<BitField>
   /**
    * stateMinerInfo returns info about the indicated miner
    */
-  stateMinerInfo (address: string, tipSetKey: Cid[]): Promise<MinerInfo>
+  stateMinerInfo(address: string, tipSetKey: Cid[]): Promise<MinerInfo>
   /**
    * stateMinerInitialPledgeCollateral returns the initial pledge collateral for the specified miner's sector
    */
-  stateMinerInitialPledgeCollateral (address: string, sectorPreCommitInfo: SectorPreCommitInfo, tipSetKey: Cid[]): Promise<string>
+  stateMinerInitialPledgeCollateral(address: string, sectorPreCommitInfo: SectorPreCommitInfo, tipSetKey: Cid[]): Promise<string>
   /**
    * stateMinerPartitions returns all partitions in the specified deadline
    */
-  stateMinerPartitions (address: string, uint: number, tipSetKey: Cid[]): Promise<Array<Partition>>
+  stateMinerPartitions(address: string, uint: number, tipSetKey: Cid[]): Promise<Array<Partition>>
   /**
    * stateMinerPower returns the power of the indicated miner
    */
-  stateMinerPower (address: string, tipSetKey: Cid[]): Promise<MinerPower>
+  stateMinerPower(address: string, tipSetKey: Cid[]): Promise<MinerPower>
   /**
    * stateMinerInitialPledgeCollateral returns the precommit deposit for the specified miner's sector
    */
-  stateMinerPreCommitDepositForPower (address: string, sectorPreCommitInfo: SectorPreCommitInfo, tipSetKey: Cid[]): Promise<string>
+  stateMinerPreCommitDepositForPower(address: string, sectorPreCommitInfo: SectorPreCommitInfo, tipSetKey: Cid[]): Promise<string>
   /**
    * stateMinerProvingDeadline calculates the deadline at some epoch for a proving period
    * and returns the deadline-related calculations.
    */
-  stateMinerProvingDeadline (address: string, tipSetKey: Cid[]): Promise<Info>
+  stateMinerProvingDeadline(address: string, tipSetKey: Cid[]): Promise<Info>
   /**
    * stateMinerRecoveries returns a bitfield indicating the recovering sectors of the given miner
    */
-  stateMinerRecoveries (address: string, tipSetKey: Cid[]): Promise<BitField>
+  stateMinerRecoveries(address: string, tipSetKey: Cid[]): Promise<BitField>
+  /**
+   * stateMinerSectorAllocated checks if a sector is allocated
+   */
+  stateMinerSectorAllocated(address: string, sectorNumber: number, tipSetKey: Cid[]): Promise<boolean>
   /**
    * stateMinerSectorCount returns the number of sectors in a miner's sector set and proving set
    */
-  stateMinerSectorCount (address: string, tipSetKey: Cid[]): Promise<MinerSectors>
+  stateMinerSectorCount(address: string, tipSetKey: Cid[]): Promise<MinerSectors>
   /**
    * stateMinerSectors returns info about the given miner's sectors. If the filter bitfield is nil, all sectors are included.
    */
-  stateMinerSectors (address: string, bitField: BitField, tipSetKey: Cid[]): Promise<Array<SectorOnChainInfo>>
+  stateMinerSectors(address: string, bitField: BitField, tipSetKey: Cid[]): Promise<Array<SectorOnChainInfo>>
   /**
    * stateNetworkName returns the name of the network the node is synced to
    */
-  stateNetworkName (): Promise<string>
+  stateNetworkName(): Promise<string>
   /**
    * stateNetworkVersion returns the network version at the given tipset
    */
-  stateNetworkVersion (tipSetKey: Cid[]): Promise<number>
+  stateNetworkVersion(tipSetKey: Cid[]): Promise<number>
   /**
    * stateReadState returns the indicated actor's state.
    */
-  stateReadState (address: string, tipSetKey: Cid[]): Promise<ActorState>
+  stateReadState(address: string, tipSetKey: Cid[]): Promise<ActorState>
   /**
    * stateReplay replays a given message, assuming it was included in a block in the specified tipset.
    * If no tipset key is provided, the appropriate tipset is looked up.
    */
-  stateReplay (tipSetKey: Cid[], cid: Cid): Promise<InvocResult>
+  stateReplay(tipSetKey: Cid[], cid: Cid): Promise<InvocResult>
   /**
    * stateSearchMsg searches for a message in the chain, and returns its receipt and the tipset where it was executed
    */
-  stateSearchMsg (cid: Cid): Promise<MsgLookup>
+  stateSearchMsg(cid: Cid): Promise<MsgLookup>
+  /**
+   * stateSearchMsgLimited looks back up to limit epochs in the chain for a message, and returns its receipt and the tipset where it was executed
+   */
+  stateSearchMsgLimited(cid: Cid, chainEpoch: number): Promise<MsgLookup>
   /**
    * stateSectorExpiration returns epoch at which given sector will expire
    */
-  stateSectorExpiration (address: string, sectorNumber: number, tipSetKey: Cid[]): Promise<SectorExpiration>
+  stateSectorExpiration(address: string, sectorNumber: number, tipSetKey: Cid[]): Promise<SectorExpiration>
   /**
    * stateSectorGetInfo returns the on-chain info for the specified miner's sector. Returns null in case the sector info isn't found
    * NOTE: returned info.Expiration may not be accurate in some cases, use StateSectorExpiration to get accurate
    * expiration epoch
    */
-  stateSectorGetInfo (address: string, sectorNumber: number, tipSetKey: Cid[]): Promise<SectorOnChainInfo>
+  stateSectorGetInfo(address: string, sectorNumber: number, tipSetKey: Cid[]): Promise<SectorOnChainInfo>
   /**
    * stateSectorPartition finds deadline/partition with the specified sector
    */
-  stateSectorPartition (address: string, sectorNumber: number, tipSetKey: Cid[]): Promise<SectorLocation>
+  stateSectorPartition(address: string, sectorNumber: number, tipSetKey: Cid[]): Promise<SectorLocation>
   /**
    * stateSectorPreCommitInfo returns the PreCommit info for the specified miner's sector
    */
-  stateSectorPreCommitInfo (address: string, sectorNumber: number, tipSetKey: Cid[]): Promise<SectorPreCommitOnChainInfo>
+  stateSectorPreCommitInfo(address: string, sectorNumber: number, tipSetKey: Cid[]): Promise<SectorPreCommitOnChainInfo>
   /**
    * stateVMCirculatingSupplyInternal returns an approximation of the circulating supply of Filecoin at the given tipset.
    * This is the value reported by the runtime interface to actors code.
    */
-  stateVMCirculatingSupplyInternal (tipSetKey: Cid[]): Promise<CirculatingSupply>
+  stateVMCirculatingSupplyInternal(tipSetKey: Cid[]): Promise<CirculatingSupply>
   /**
    * stateVerifiedClientStatus returns the data cap for the given address.
    * Returns nil if there is no entry in the data cap table for the
    * address.
    */
-  stateVerifiedClientStatus (address: string, tipSetKey: Cid[]): Promise<string>
+  stateVerifiedClientStatus(address: string, tipSetKey: Cid[]): Promise<string>
   /**
    * stateVerifiedClientStatus returns the address of the Verified Registry's root key
    */
-  stateVerifiedRegistryRootKey (tipSetKey: Cid[]): Promise<string>
+  stateVerifiedRegistryRootKey(tipSetKey: Cid[]): Promise<string>
   /**
    * stateVerifierStatus returns the data cap for the given address.
    * Returns nil if there is no entry in the data cap table for the
    * address.
    */
-  stateVerifierStatus (address: string, tipSetKey: Cid[]): Promise<string>
+  stateVerifierStatus(address: string, tipSetKey: Cid[]): Promise<string>
   /**
    * stateWaitMsg looks back in the chain for a message. If not found, it blocks until the
    * message arrives on chain, and gets to the indicated confidence depth.
    */
-  stateWaitMsg (cid: Cid, uint: number): Promise<MsgLookup>
+  stateWaitMsg(cid: Cid, uint: number): Promise<MsgLookup>
   /**
    * stateWaitMsgLimited looks back up to limit epochs in the chain for a message.
    * If not found, it blocks until the message arrives on chain, and gets to the
    * indicated confidence depth.
    */
-  stateWaitMsgLimited (cid: Cid, uint: number, chainEpoch: number): Promise<MsgLookup>
+  stateWaitMsgLimited(cid: Cid, uint: number, chainEpoch: number): Promise<MsgLookup>
   /**
    * syncCheckBad checks if a block was marked as bad, and if it was, returns
    * the reason.
    */
-  syncCheckBad (cid: Cid): Promise<string>
+  syncCheckBad(cid: Cid): Promise<string>
   /**
    * syncCheckpoint marks a blocks as checkpointed, meaning that it won't ever fork away from it.
    */
-  syncCheckpoint (tipSetKey: Cid[]): Promise<void>
+  syncCheckpoint(tipSetKey: Cid[]): Promise<void>
   /**
    * syncIncomingBlocks returns a channel streaming incoming, potentially not
    * yet synced block headers.
    */
-  syncIncomingBlocks (handler: (data: BlockHeader) => void): [() => void, Promise<void>]
+  syncIncomingBlocks(handler: (data: BlockHeader) => void): [() => void, Promise<void>]
   /**
    * syncMarkBad marks a blocks as bad, meaning that it won't ever by synced.
    * Use with extreme caution.
    */
-  syncMarkBad (cid: Cid): Promise<void>
+  syncMarkBad(cid: Cid): Promise<void>
   /**
    * syncState returns the current status of the lotus sync system.
    */
-  syncState (): Promise<SyncState>
+  syncState(): Promise<SyncState>
   /**
    * syncSubmitBlock can be used to submit a newly created block to the.
    * network through this node
    */
-  syncSubmitBlock (blockMsg: BlockMsg): Promise<void>
+  syncSubmitBlock(blockMsg: BlockMsg): Promise<void>
   /**
    * syncUnmarkAllBad purges bad block cache, making it possible to sync to chains previously marked as bad
    */
-  syncUnmarkAllBad (): Promise<void>
+  syncUnmarkAllBad(): Promise<void>
   /**
    * syncUnmarkBad unmarks a blocks as bad, making it possible to be validated and synced again.
    */
-  syncUnmarkBad (cid: Cid): Promise<void>
+  syncUnmarkBad(cid: Cid): Promise<void>
   /**
    * syncValidateTipset indicates whether the provided tipset is valid or not
    */
-  syncValidateTipset (tipSetKey: Cid[]): Promise<boolean>
+  syncValidateTipset(tipSetKey: Cid[]): Promise<boolean>
   /**
    * walletBalance returns the balance of the given address at the current head of the chain.
    */
-  walletBalance (address: string): Promise<string>
+  walletBalance(address: string): Promise<string>
   /**
    * walletDefaultAddress returns the address marked as default in the wallet.
    */
-  walletDefaultAddress (): Promise<string>
+  walletDefaultAddress(): Promise<string>
   /**
    * walletDelete deletes an address from the wallet.
    */
-  walletDelete (address: string): Promise<void>
+  walletDelete(address: string): Promise<void>
   /**
    * walletExport returns the private key of an address in the wallet.
    */
-  walletExport (address: string): Promise<KeyInfo>
+  walletExport(address: string): Promise<KeyInfo>
   /**
    * walletHas indicates whether the given address is in the wallet.
    */
-  walletHas (address: string): Promise<boolean>
+  walletHas(address: string): Promise<boolean>
   /**
    * walletImport receives a KeyInfo, which includes a private key, and imports it into the wallet.
    */
-  walletImport (keyInfo: KeyInfo): Promise<string>
+  walletImport(keyInfo: KeyInfo): Promise<string>
   /**
    * walletList lists all the addresses in the wallet.
    */
-  walletList (): Promise<Array<string>>
+  walletList(): Promise<Array<string>>
   /**
    * walletNew creates a new address in the wallet with the given sigType.
    * Available key types: bls, secp256k1, secp256k1-ledger
    * Support for numerical types: 1 - secp256k1, 2 - BLS is deprecated
    */
-  walletNew (keyType: string): Promise<string>
+  walletNew(keyType: string): Promise<string>
   /**
    * walletSetDefault marks the given address as as the default one.
    */
-  walletSetDefault (address: string): Promise<void>
+  walletSetDefault(address: string): Promise<void>
   /**
    * walletSign signs the given bytes using the given address.
    */
-  walletSign (address: string, bytes: string): Promise<Signature>
+  walletSign(address: string, bytes: string): Promise<Signature>
   /**
    * walletSignMessage signs the given message using the given address.
    */
-  walletSignMessage (address: string, message: Message): Promise<SignedMessage>
+  walletSignMessage(address: string, message: Message): Promise<SignedMessage>
   /**
    * walletValidateAddress validates whether a given string can be decoded as a well-formed address
    */
-  walletValidateAddress (str: string): Promise<string>
+  walletValidateAddress(str: string): Promise<string>
   /**
    * walletVerify takes an address, a signature, and some bytes, and indicates whether the signature is valid.
    * The address does not have to be in the wallet.
    */
-  walletVerify (address: string, bytes: string, signature: Signature): Promise<boolean>
-  actorAddress (): Promise<string>
-  actorSectorSize (address: string): Promise<number>
-  dealsConsiderOfflineRetrievalDeals (): Promise<boolean>
-  dealsConsiderOfflineStorageDeals (): Promise<boolean>
-  dealsConsiderOnlineRetrievalDeals (): Promise<boolean>
-  dealsConsiderOnlineStorageDeals (): Promise<boolean>
-  dealsImportData (cid: Cid, str: string): Promise<void>
-  dealsList (): Promise<Array<MarketDeal>>
-  dealsPieceCidBlocklist (): Promise<Array<Cid>>
-  dealsSetConsiderOfflineRetrievalDeals (bool: boolean): Promise<void>
-  dealsSetConsiderOfflineStorageDeals (bool: boolean): Promise<void>
-  dealsSetConsiderOnlineRetrievalDeals (bool: boolean): Promise<void>
-  dealsSetConsiderOnlineStorageDeals (bool: boolean): Promise<void>
-  dealsSetPieceCidBlocklist (cid: Array<Cid>): Promise<void>
-  marketDataTransferUpdates (handler: (data: DataTransferChannel) => void): [() => void, Promise<void>]
-  marketGetAsk (): Promise<SignedStorageAsk>
-  marketGetDealUpdates (handler: (data: MinerDeal) => void): [() => void, Promise<void>]
-  marketGetRetrievalAsk (): Promise<Ask>
-  marketImportDealData (cid: Cid, str: string): Promise<void>
-  marketListDataTransfers (): Promise<Array<DataTransferChannel>>
-  marketListDeals (): Promise<Array<MarketDeal>>
-  marketListIncompleteDeals (): Promise<Array<MinerDeal>>
-  marketListRetrievalDeals (): Promise<Array<ProviderDealState>>
-  marketSetAsk (bigInt: string, bigInt1: string, chainEpoch: number, paddedPieceSize: number, paddedPieceSize1: number): Promise<void>
-  marketSetRetrievalAsk (ask: Ask): Promise<void>
-  miningBase (): Promise<TipSet>
-  piecesGetCIDInfo (cid: Cid): Promise<CIDInfo>
-  piecesGetPieceInfo (cid: Cid): Promise<PieceInfo>
-  piecesListCidInfos (): Promise<Array<Cid>>
-  piecesListPieces (): Promise<Array<Cid>>
+  walletVerify(address: string, bytes: string, signature: Signature): Promise<boolean>
+  actorAddress(): Promise<string>
+  actorAddressConfig(): Promise<AddressConfig>
+  actorSectorSize(address: string): Promise<number>
+  checkProvable(registeredPoStProof: number, sectorRef: Array<SectorRef>, bool: boolean): Promise<{ [k: string]: string }>
+  dealsConsiderOfflineRetrievalDeals(): Promise<boolean>
+  dealsConsiderOfflineStorageDeals(): Promise<boolean>
+  dealsConsiderOnlineRetrievalDeals(): Promise<boolean>
+  dealsConsiderOnlineStorageDeals(): Promise<boolean>
+  dealsConsiderUnverifiedStorageDeals(): Promise<boolean>
+  dealsConsiderVerifiedStorageDeals(): Promise<boolean>
+  dealsImportData(cid: Cid, str: string): Promise<void>
+  dealsList(): Promise<Array<MarketDeal>>
+  dealsPieceCidBlocklist(): Promise<Array<Cid>>
+  dealsSetConsiderOfflineRetrievalDeals(bool: boolean): Promise<void>
+  dealsSetConsiderOfflineStorageDeals(bool: boolean): Promise<void>
+  dealsSetConsiderOnlineRetrievalDeals(bool: boolean): Promise<void>
+  dealsSetConsiderOnlineStorageDeals(bool: boolean): Promise<void>
+  dealsSetConsiderUnverifiedStorageDeals(bool: boolean): Promise<void>
+  dealsSetConsiderVerifiedStorageDeals(bool: boolean): Promise<void>
+  dealsSetPieceCidBlocklist(cid: Array<Cid>): Promise<void>
+  /**
+   * marketCancelDataTransfer cancels a data transfer with the given transfer ID and other peer
+   */
+  marketCancelDataTransfer(transferID: number, id: string, bool: boolean): Promise<void>
+  marketDataTransferUpdates(handler: (data: DataTransferChannel) => void): [() => void, Promise<void>]
+  marketGetAsk(): Promise<SignedStorageAsk>
+  marketGetDealUpdates(handler: (data: MinerDeal) => void): [() => void, Promise<void>]
+  marketGetRetrievalAsk(): Promise<Ask>
+  marketImportDealData(cid: Cid, str: string): Promise<void>
+  marketListDataTransfers(): Promise<Array<DataTransferChannel>>
+  marketListDeals(): Promise<Array<MarketDeal>>
+  marketListIncompleteDeals(): Promise<Array<MinerDeal>>
+  marketListRetrievalDeals(): Promise<Array<ProviderDealState>>
+  marketPendingDeals(): Promise<PendingDealInfo>
+  marketPublishPendingDeals(): Promise<void>
+  /**
+   * marketRestartDataTransfer attempts to restart a data transfer with the given transfer ID and other peer
+   */
+  marketRestartDataTransfer(transferID: number, id: string, bool: boolean): Promise<void>
+  marketSetAsk(bigInt: string, bigInt1: string, chainEpoch: number, paddedPieceSize: number, paddedPieceSize1: number): Promise<void>
+  marketSetRetrievalAsk(ask: Ask): Promise<void>
+  miningBase(): Promise<TipSet>
+  piecesGetCIDInfo(cid: Cid): Promise<CIDInfo>
+  piecesGetPieceInfo(cid: Cid): Promise<PieceInfo>
+  piecesListCidInfos(): Promise<Array<Cid>>
+  piecesListPieces(): Promise<Array<Cid>>
   /**
    * temp api for testing
    */
-  pledgeSector (): Promise<void>
+  pledgeSector(): Promise<SectorID>
+  returnAddPiece(callID: CallID, pieceInfo: PieceInfo1, callError: CallError): Promise<void>
+  returnFetch(callID: CallID, callError: CallError): Promise<void>
+  returnFinalizeSector(callID: CallID, callError: CallError): Promise<void>
+  returnMoveStorage(callID: CallID, callError: CallError): Promise<void>
+  returnReadPiece(callID: CallID, bool: boolean, callError: CallError): Promise<void>
+  returnReleaseUnsealed(callID: CallID, callError: CallError): Promise<void>
+  returnSealCommit1(callID: CallID, uint: Array<number>, callError: CallError): Promise<void>
+  returnSealCommit2(callID: CallID, uint: Array<number>, callError: CallError): Promise<void>
+  returnSealPreCommit1(callID: CallID, uint: Array<number>, callError: CallError): Promise<void>
+  returnSealPreCommit2(callID: CallID, sectorCids: SectorCids, callError: CallError): Promise<void>
+  returnUnsealPiece(callID: CallID, callError: CallError): Promise<void>
+  sealingAbort(callID: CallID): Promise<void>
   /**
    * sealingSchedDiag dumps internal sealing scheduler state
    */
-  sealingSchedDiag (): Promise<any>
+  sealingSchedDiag(bool: boolean): Promise<any>
   /**
    * sectorGetExpectedSealDuration gets the expected time for a sector to seal
    */
-  sectorGetExpectedSealDuration (): Promise<number>
+  sectorGetExpectedSealDuration(): Promise<number>
   /**
    * sectorGetSealDelay gets the time that a newly-created sector
    * waits for more deals before it starts sealing
    */
-  sectorGetSealDelay (): Promise<number>
-  sectorMarkForUpgrade (sectorNumber: number): Promise<void>
-  sectorRemove (sectorNumber: number): Promise<void>
+  sectorGetSealDelay(): Promise<number>
+  sectorMarkForUpgrade(sectorNumber: number): Promise<void>
+  /**
+   * sectorRemove removes the sector from storage. It doesn't terminate it on-chain, which can
+   * be done with SectorTerminate. Removing and not terminating live sectors will cause additional penalties.
+   */
+  sectorRemove(sectorNumber: number): Promise<void>
   /**
    * sectorSetExpectedSealDuration sets the expected time for a sector to seal
    */
-  sectorSetExpectedSealDuration (duration: number): Promise<void>
+  sectorSetExpectedSealDuration(duration: number): Promise<void>
   /**
    * sectorSetSealDelay sets the time that a newly-created sector
    * waits for more deals before it starts sealing
    */
-  sectorSetSealDelay (duration: number): Promise<void>
+  sectorSetSealDelay(duration: number): Promise<void>
   /**
    * sectorStartSealing can be called on sectors in Empty or WaitDeals states
    * to trigger sealing early
    */
-  sectorStartSealing (sectorNumber: number): Promise<void>
+  sectorStartSealing(sectorNumber: number): Promise<void>
+  /**
+   * sectorTerminate terminates the sector on-chain (adding it to a termination batch first), then
+   * automatically removes it from storage
+   */
+  sectorTerminate(sectorNumber: number): Promise<void>
+  /**
+   * sectorTerminateFlush immediately sends a terminate message with sectors batched for termination.
+   * Returns null if message wasn't sent
+   */
+  sectorTerminateFlush(): Promise<Cid>
+  /**
+   * sectorTerminatePending returns a list of pending sector terminations to be sent in the next batch message
+   */
+  sectorTerminatePending(): Promise<Array<SectorID>>
   /**
    * list all staged sectors
    */
-  sectorsList (): Promise<Array<number>>
-  sectorsRefs (): Promise<{ [k: string]: Array<SealedRef> }>
+  sectorsList(): Promise<Array<number>>
+  /**
+   * list sectors in particular states
+   */
+  sectorsListInStates(sectorState: Array<string>): Promise<Array<number>>
+  sectorsRefs(): Promise<{ [k: string]: Array<SealedRef> }>
   /**
    * get the status of a given sector by ID
    */
-  sectorsStatus (sectorNumber: number, bool: boolean): Promise<SectorInfo1>
-  sectorsUpdate (sectorNumber: number, sectorState: string): Promise<void>
-  storageAddLocal (str: string): Promise<void>
-  storageAttach (storageInfo: StorageInfo, fsStat: FsStat): Promise<void>
-  storageBestAlloc (sectorFileType: number, sectorSize: number, pathType: string): Promise<Array<StorageInfo>>
-  storageDeclareSector (id: string, sectorID: SectorID, sectorFileType: number, bool: boolean): Promise<void>
-  storageDropSector (id: string, sectorID: SectorID, sectorFileType: number): Promise<void>
-  storageFindSector (sectorID: SectorID, sectorFileType: number, sectorSize: number, bool: boolean): Promise<Array<SectorStorageInfo>>
-  storageInfo (id: string): Promise<StorageInfo>
-  storageList (): Promise<{ [k: string]: Array<Decl> }>
-  storageLocal (): Promise<{ [k: string]: string }>
-  storageLock (sectorID: SectorID, sectorFileType: number, sectorFileType1: number): Promise<void>
-  storageReportHealth (id: string, healthReport: HealthReport): Promise<void>
-  storageStat (id: string): Promise<FsStat>
-  storageTryLock (sectorID: SectorID, sectorFileType: number, sectorFileType1: number): Promise<boolean>
+  sectorsStatus(sectorNumber: number, bool: boolean): Promise<SectorInfo1>
+  /**
+   * get summary info of sectors
+   */
+  sectorsSummary(): Promise<{ [k: string]: number }>
+  sectorsUpdate(sectorNumber: number, sectorState: string): Promise<void>
+  storageAddLocal(str: string): Promise<void>
+  storageAttach(storageInfo: StorageInfo, fsStat: FsStat): Promise<void>
+  storageBestAlloc(sectorFileType: number, sectorSize: number, pathType: string): Promise<Array<StorageInfo>>
+  storageDeclareSector(id: string, sectorID: SectorID, sectorFileType: number, bool: boolean): Promise<void>
+  storageDropSector(id: string, sectorID: SectorID, sectorFileType: number): Promise<void>
+  storageFindSector(sectorID: SectorID, sectorFileType: number, sectorSize: number, bool: boolean): Promise<Array<SectorStorageInfo>>
+  storageInfo(id: string): Promise<StorageInfo>
+  storageList(): Promise<{ [k: string]: Array<Decl> }>
+  storageLocal(): Promise<{ [k: string]: string }>
+  storageLock(sectorID: SectorID, sectorFileType: number, sectorFileType1: number): Promise<void>
+  storageReportHealth(id: string, healthReport: HealthReport): Promise<void>
+  storageStat(id: string): Promise<FsStat>
+  storageTryLock(sectorID: SectorID, sectorFileType: number, sectorFileType1: number): Promise<boolean>
   /**
    * workerConnect tells the node to connect to workers RPC
    */
-  workerConnect (str: string): Promise<void>
-  workerJobs (): Promise<{ [k: string]: Array<WorkerJob> }>
-  workerStats (): Promise<{ [k: string]: WorkerStats }>
-  addPiece (sectorID: SectorID, unpaddedPieceSize: Array<number>, unpaddedPieceSize1: number, reader: any): Promise<PieceInfo1>
-  fetch (sectorID: SectorID, sectorFileType: number, pathType: string, acquireMode: string): Promise<void>
-  finalizeSector (sectorID: SectorID, range: Array<Range>): Promise<void>
-  info (): Promise<WorkerInfo>
-  moveStorage (sectorID: SectorID, sectorFileType: number): Promise<void>
-  paths (): Promise<Array<StoragePath>>
-  readPiece (writer: any, sectorID: SectorID, unpaddedByteIndex: number, unpaddedPieceSize: number): Promise<boolean>
-  releaseUnsealed (sectorID: SectorID, range: Array<Range>): Promise<void>
-  remove (sectorID: SectorID): Promise<void>
-  sealCommit1 (sectorID: SectorID, uint: Array<number>, uint1: Array<number>, pieceInfo: Array<PieceInfo1>, sectorCids: SectorCids): Promise<Array<number>>
-  sealCommit2 (sectorID: SectorID, uint: Array<number>): Promise<Array<number>>
-  sealPreCommit1 (sectorID: SectorID, uint: Array<number>, pieceInfo: Array<PieceInfo1>): Promise<Array<number>>
-  sealPreCommit2 (sectorID: SectorID, uint: Array<number>): Promise<SectorCids>
+  workerConnect(str: string): Promise<void>
+  workerJobs(): Promise<{ [k: string]: Array<WorkerJob> }>
+  workerStats(): Promise<{ [k: string]: WorkerStats }>
+  addPiece(sectorRef: SectorRef, unpaddedPieceSize: Array<number>, unpaddedPieceSize1: number, reader: any): Promise<CallID>
+  enabled(): Promise<boolean>
+  fetch(sectorRef: SectorRef, sectorFileType: number, pathType: string, acquireMode: string): Promise<CallID>
+  finalizeSector(sectorRef: SectorRef, range: Array<Range>): Promise<CallID>
+  info(): Promise<WorkerInfo>
+  moveStorage(sectorRef: SectorRef, sectorFileType: number): Promise<CallID>
+  paths(): Promise<Array<StoragePath>>
+  /**
+   * returns a random UUID of worker session, generated randomly when worker
+   * process starts
+   */
+  processSession(): Promise<Array<number>>
+  readPiece(writer: any, sectorRef: SectorRef, unpaddedByteIndex: number, unpaddedPieceSize: number): Promise<CallID>
+  releaseUnsealed(sectorRef: SectorRef, range: Array<Range>): Promise<CallID>
+  /**
+   * storage / Other
+   */
+  remove(sectorID: SectorID): Promise<void>
+  sealCommit1(sectorRef: SectorRef, uint: Array<number>, uint1: Array<number>, pieceInfo: Array<PieceInfo1>, sectorCids: SectorCids): Promise<CallID>
+  sealCommit2(sectorRef: SectorRef, uint: Array<number>): Promise<CallID>
+  sealPreCommit1(sectorRef: SectorRef, uint: Array<number>, pieceInfo: Array<PieceInfo1>): Promise<CallID>
+  sealPreCommit2(sectorRef: SectorRef, uint: Array<number>): Promise<CallID>
+  /**
+   * setEnabled marks the worker as enabled/disabled. Not that this setting
+   * may take a few seconds to propagate to task scheduler
+   */
+  setEnabled(bool: boolean): Promise<void>
+  taskDisable(taskType: string): Promise<void>
+  taskEnable(taskType: string): Promise<void>
   /**
    * taskType -> Weight
    */
-  taskTypes (): Promise<{ [k: string]: {} }>
-  unsealPiece (sectorID: SectorID, unpaddedByteIndex: number, unpaddedPieceSize: number, uint: Array<number>, cid: Cid): Promise<void>
-  importFile (body: Blob | BufferSource | FormData | URLSearchParams | string | ReadableStream): string
-  destroy (code?: number): void
+  taskTypes(): Promise<{ [k: string]: {} }>
+  unsealPiece(sectorRef: SectorRef, unpaddedByteIndex: number, unpaddedPieceSize: number, uint: Array<number>, cid: Cid): Promise<CallID>
+  /**
+   * waitQuiet blocks until there are no tasks running
+   */
+  waitQuiet(): Promise<void>
+  importFile(body: Blob | BufferSource | FormData | URLSearchParams | string | ReadableStream): string
+  destroy(code?: number): void
 }
-export { LotusRPC, Cid, AddrInfo, NatInfo, Stats, TopicScoreSnapshot, PeerScoreSnapshot, PubsubScore, Version, BeaconEntry, Ticket, ElectionProof, PoStProof, Signature, BlockHeader, Message, SignedMessage, BlockMessages, ExpTipSet, TipSet, IpldObject, Message1, MessageReceipt, HeadChange, ObjStat, CommPRet, DataTransferChannel, DataSize, RetrievalPeer, QueryOffer, FileRef, DataRef, Time, DealInfo, ImportRes, Import, StorageAsk, RetrievalOrder, RetrievalEvent, StartDealParams, MessageSendSpec, BlockMsg, BlockTemplate, SectorInfo, MiningBaseInfo, MpoolConfig, MpoolUpdate, MsigVesting, ChannelAvailableFunds, ChannelInfo, ModVerifyParams, Merge, SignedVoucher, PaymentInfo, VoucherSpec, PaychStatus, VoucherCreateResult, Fault, MsgGasCost, Loc, GasTrace, ExecutionTrace, InvocResult, Actor, ComputeStateOutput, DealCollateralBounds, MessageMatch, MarketBalance, DealProposal, DealState, MarketDeal, SectorOnChainInfo, BitField, Deadline, MinerInfo, SectorPreCommitInfo, Partition, Claim, MinerPower, Info, MinerSectors, ActorState, MsgLookup, SectorExpiration, SectorLocation, SectorPreCommitOnChainInfo, CirculatingSupply, ActiveSync, SyncState, KeyInfo, SignedStorageAsk, DealProposal1, ClientDealProposal, CborTime, ChannelID, MinerDeal, Ask, Deferred, Params, DealProposal2, DealInfo1, PieceInfo, ProviderDealState, BlockLocation, PieceBlockLocation, CIDInfo, SealedRef, SealTicket, SealSeed, SectorLog, SectorInfo1, StorageInfo, FsStat, SectorID, SectorStorageInfo, Decl, HealthReport, WorkerJob, WorkerResources, WorkerInfo, WorkerStats, PieceInfo1, Range, StoragePath, SectorCids }
+export { LotusRPC, Cid, AddrInfo, NatInfo, Stats, NetBlockList, Time, ConnMgrInfo, ExtendedPeerInfo, TopicScoreSnapshot, PeerScoreSnapshot, PubsubScore, APIVersion, BeaconEntry, Ticket, ElectionProof, PoStProof, Signature, BlockHeader, Message, SignedMessage, BlockMessages, ExpTipSet, TipSet, IpldObject, Message1, MessageReceipt, HeadChange, ObjStat, CommPRet, DataTransferChannel, DataCIDSize, DataSize, RetrievalPeer, QueryOffer, FileRef, DataRef, ChannelID, DealInfo, ImportRes, Import, StorageAsk, RetrievalOrder, RetrievalEvent, StartDealParams, MessageSendSpec, BlockMsg, BlockTemplate, SectorInfo, MiningBaseInfo, MpoolConfig, MpoolUpdate, MsigTransaction, MsigVesting, ChannelAvailableFunds, ChannelInfo, ModVerifyParams, Merge, SignedVoucher, PaymentInfo, VoucherSpec, PaychStatus, VoucherCreateResult, Fault, MsgGasCost, Loc, GasTrace, ExecutionTrace, InvocResult, Actor, ComputeStateOutput, DealCollateralBounds, MessageMatch, MarketBalance, DealProposal, DealState, MarketDeal, SectorOnChainInfo, BitField, Deadline, MinerInfo, SectorPreCommitInfo, Partition, Claim, MinerPower, Info, MinerSectors, ActorState, MsgLookup, SectorExpiration, SectorLocation, SectorPreCommitOnChainInfo, CirculatingSupply, ActiveSync, SyncState, KeyInfo, AddressConfig, SectorID, SectorRef, SignedStorageAsk, DealProposal1, ClientDealProposal, CborTime, MinerDeal, Ask, Deferred, Params, DealProposal2, DealInfo1, PieceInfo, ProviderDealState, PendingDealInfo, BlockLocation, PieceBlockLocation, CIDInfo, CallID, PieceInfo1, CallError, SectorCids, SealedRef, SealTicket, SealSeed, SectorLog, SectorInfo1, StorageInfo, FsStat, SectorStorageInfo, Decl, HealthReport, WorkerJob, WorkerResources, WorkerInfo, WorkerStats, Range, StoragePath }
