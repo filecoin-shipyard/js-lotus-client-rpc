@@ -24,9 +24,9 @@ class LotusRPC {
               // `Namespace.Method` method. Further, the `schemaMethod` needs to provide
               // the `namespace` string set to `Namespace`. This allows calling
               // provider.namespaceMethod() or provider.NamespaceMethod().
-              method = `${schemaMethod.namespace}.${method.slice(schemaMethod.namespace.length)}`;
+              method = `${schemaMethod.namespace}.${method.slice(schemaMethod.namespace.length)}`
             } else {
-              method = `Filecoin.${method}`;
+              method = `Filecoin.${method}`
             }
 
             if (schemaMethod.subscription) {
