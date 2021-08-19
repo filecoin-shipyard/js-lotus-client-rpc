@@ -9,7 +9,9 @@
     "dual-publish-prepare": "rm -rf dual-publish-tmp; dual-publish --check",
     "build": "npm run dual-publish-prepare"
   },
-  "keywords": [],
+  "keywords": [
+    "filecoin"
+  ],
   "author": "Jim Pick (@jimpick)",
   "license": "(Apache-2.0 AND MIT)",
   "devDependencies": {
@@ -103,7 +105,7 @@
       [
         "@semantic-release/npm",
         {
-          "pkgRoot": "dist"
+          "pkgRoot": "dual-publish-tmp"
         }
       ],
       "@semantic-release/github",

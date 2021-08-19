@@ -6,16 +6,13 @@ This library supplies a low-level interface for making calls to the
 See [filecoin-shipyard/js-lotus-client](https://github.com/filecoin-shipyard/js-lotus-client)
 for examples that show how to use this provider.
 
-## Releasing
-
-When releasing this module, [`dual-publish`](https://github.com/ai/dual-publish) should be used to publish the project as dual ES modules and CommonJS package to npm.
-
-```sh
-npm run dual-publish
-```
-
-⚠️ confirm `.cjs` files are included on the command output.
-
 ## License
 
-Dual-licensed under [MIT](https://github.com/filecoin-project/lotus/blob/master/LICENSE-MIT) + [Apache 2.0](https://github.com/filecoin-project/lotus/blob/master/LICENSE-APACHE)
+Licensed under either of
+
+ * Apache 2.0, ([LICENSE-APACHE](LICENSE-APACHE) / http://www.apache.org/licenses/LICENSE-2.0)
+ * MIT ([LICENSE-MIT](LICENSE-MIT) / http://opensource.org/licenses/MIT)
+
+### Contribution
+
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
