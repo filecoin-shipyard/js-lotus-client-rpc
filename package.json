@@ -1,13 +1,14 @@
 {
   "name": "@filecoin-shipyard/lotus-client-rpc",
-  "version": "0.2.1",
-  "description": "Lotus JS Client Web Browser Provider module",
+  "version": "0.0.0-dev",
+  "description": "Lotus JS Client RPC Library",
   "scripts": {
     "lint": "standard",
     "test": "npm run lint",
     "prepublishOnly": "npm test",
     "dual-publish-prepare": "rm -rf dual-publish-tmp; dual-publish --check",
-    "build": "npm run dual-publish-prepare"
+    "build": "npm run dual-publish-prepare",
+    "build:ts": "go mod init github.com/filecoin-shipyard/js-lotus-client-rpc && go get github.com/filecoin-project/lotus/api && go get github.com/filecoin-shipyard/js-lotus-client-schema/go-tsgen@master && $GOPATH/bin/go-tsgen > index.d.ts && rm go.mod go.sum"
   },
   "keywords": [
     "filecoin"
