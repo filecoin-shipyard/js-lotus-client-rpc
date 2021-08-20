@@ -1,3 +1,10 @@
+## [1.1.0](https://github.com/filecoin-shipyard/js-lotus-client-rpc/compare/v1.0.1...v1.1.0) (2021-08-20)
+
+
+### Features
+
+* update types for lotus@1.11.1 ([2d61d1a](https://github.com/filecoin-shipyard/js-lotus-client-rpc/commit/2d61d1a2bee1a330ab8f3da68f03b6b291a1bb55))
+
 ### [1.0.1](https://github.com/filecoin-shipyard/js-lotus-client-rpc/compare/v1.0.0...v1.0.1) (2021-08-20)
 
 
