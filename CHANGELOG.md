@@ -1,3 +1,10 @@
+### [1.0.1](https://github.com/filecoin-shipyard/js-lotus-client-rpc/compare/v1.0.0...v1.0.1) (2021-08-20)
+
+
+### Trivial Changes
+
+* **deps:** bump actions/setup-node from 2.2.0 to 2.4.0 ([a994230](https://github.com/filecoin-shipyard/js-lotus-client-rpc/commit/a9942302bbb1e10b0d976dd511f907006b9eb6ff))
+
 ## 1.0.0 (2021-08-20)
 
 
