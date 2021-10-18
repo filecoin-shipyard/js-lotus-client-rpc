@@ -1,3 +1,10 @@
+### [1.1.2](https://github.com/filecoin-shipyard/js-lotus-client-rpc/compare/v1.1.1...v1.1.2) (2021-10-18)
+
+
+### Trivial Changes
+
+* **deps:** bump actions/checkout from 2.3.4 to 2.3.5 ([#19](https://github.com/filecoin-shipyard/js-lotus-client-rpc/issues/19)) ([5b75cff](https://github.com/filecoin-shipyard/js-lotus-client-rpc/commit/5b75cff88f9e5d74941dfee8714b8ecd976054a8))
+
 ### [1.1.1](https://github.com/filecoin-shipyard/js-lotus-client-rpc/compare/v1.1.0...v1.1.1) (2021-09-28)
 
 
