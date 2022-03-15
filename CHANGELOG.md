@@ -1,3 +1,16 @@
+## [1.2.0](https://github.com/filecoin-shipyard/js-lotus-client-rpc/compare/v1.1.4...v1.2.0) (2022-03-15)
+
+
+### Features
+
+* update types to lotus@1.15.0 ([b11dcaf](https://github.com/filecoin-shipyard/js-lotus-client-rpc/commit/b11dcaf54d50948052b1b600b181357e2e6cff3a))
+
+
+### Trivial Changes
+
+* **no-release:** bump actions/checkout from 2.4.0 to 3 ([#25](https://github.com/filecoin-shipyard/js-lotus-client-rpc/issues/25)) ([b1b5a36](https://github.com/filecoin-shipyard/js-lotus-client-rpc/commit/b1b5a36ec672526db2215a7322fe32908713c48e))
+* **no-release:** bump actions/setup-node from 2.5.1 to 3.0.0 ([#24](https://github.com/filecoin-shipyard/js-lotus-client-rpc/issues/24)) ([2568411](https://github.com/filecoin-shipyard/js-lotus-client-rpc/commit/2568411db3d1bbaa8d479ef06637f6688483a56f))
+
 ### [1.1.4](https://github.com/filecoin-shipyard/js-lotus-client-rpc/compare/v1.1.3...v1.1.4) (2022-01-24)
 
 
