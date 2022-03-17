@@ -26,7 +26,7 @@
     "url": "git+https://github.com/bitrainforest/filmeta-client-rpc.js.git"
   },
   "author": "eliassama <elias@elias.ink> (https://github.com/eliassama)",
-  "license": "MIT",
+  "license": "(Apache-2.0 AND MIT)",
   "bugs": {
     "url": "https://github.com/bitrainforest/filmeta-client-rpc.js/issues"
   },

@@ -1,6 +1,8 @@
 # @bit-rainforest/lotus-client-rpc.js
 
+![standard-readme compliant](https://img.shields.io/badge/js--lotus--client--rpc-fork-yellow.svg?style=flat-square)
 ![standard-readme compliant](https://img.shields.io/badge/typescript-v4.5.2-green.svg?style=flat-square)
+
 
 FilMeta 2.0 RPC api js client
 
