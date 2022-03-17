@@ -1,116 +1,50 @@
 {
-  "name": "@filecoin-shipyard/lotus-client-rpc",
-  "version": "0.0.0-dev",
-  "description": "Lotus JS Client RPC Library",
+  "name": "@bit-rainforest/lotus-client-rpc.js",
+  "version": "0.0.0",
+  "description": "FilMeta 2.0 RPC api js client",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "lint": "standard",
-    "test": "npm run lint",
-    "prepublishOnly": "npm test",
-    "dual-publish-prepare": "rm -rf dual-publish-tmp; dual-publish --check",
-    "build": "npm run dual-publish-prepare",
-    "build:ts": "go mod init github.com/filecoin-shipyard/js-lotus-client-rpc && go get github.com/filecoin-project/lotus/api && go get github.com/filecoin-shipyard/js-lotus-client-schema/go-tsgen@master && $GOPATH/bin/go-tsgen > index.d.ts && rm go.mod go.sum"
+    "test": "jest --config jestconfig.json",
+    "format": "prettier --write src/",
+    "lint": "eslint src/",
+    "prebuild": "npm run format && npm run lint && git add -A src && rm -rf lib",
+    "build": "tsc",
+    "preversion": "npm run build",
+    "patch": "npm version patch",
+    "minor": "npm version minor",
+    "major": "npm version major",
+    "postversion": "git push && git push --tags",
+    "prepublishOnly": "npm run build",
+    "version": "npm run format && git add -A src"
   },
-  "keywords": [
-    "filecoin"
+  "pre-commit": [
+    "build"
   ],
-  "author": "Jim Pick (@jimpick)",
-  "license": "(Apache-2.0 AND MIT)",
-  "devDependencies": {
-    "dual-publish": "^3.0.0",
-    "standard": "^16.0.3"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/filecoin-shipyard/js-lotus-client-rpc.git"
+    "url": "git+https://github.com/bitrainforest/filmeta-client-rpc.js.git"
   },
+  "author": "eliassama <elias@elias.ink> (https://github.com/eliassama)",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/filecoin-shipyard/js-lotus-client-rpc/issues"
+    "url": "https://github.com/bitrainforest/filmeta-client-rpc.js/issues"
   },
-  "homepage": "https://github.com/filecoin-shipyard/js-lotus-client-rpc#readme",
-  "release": {
-    "branches": [
-      "master"
-    ],
-    "plugins": [
-      [
-        "@semantic-release/commit-analyzer",
-        {
-          "preset": "conventionalcommits",
-          "releaseRules": [
-            {
-              "breaking": true,
-              "release": "major"
-            },
-            {
-              "revert": true,
-              "release": "patch"
-            },
-            {
-              "type": "feat",
-              "release": "minor"
-            },
-            {
-              "type": "fix",
-              "release": "patch"
-            },
-            {
-              "type": "chore",
-              "release": "patch"
-            },
-            {
-              "type": "docs",
-              "release": "patch"
-            },
-            {
-              "type": "test",
-              "release": "patch"
-            },
-            {
-              "scope": "no-release",
-              "release": false
-            }
-          ]
-        }
-      ],
-      [
-        "@semantic-release/release-notes-generator",
-        {
-          "preset": "conventionalcommits",
-          "presetConfig": {
-            "types": [
-              {
-                "type": "feat",
-                "section": "Features"
-              },
-              {
-                "type": "fix",
-                "section": "Bug Fixes"
-              },
-              {
-                "type": "chore",
-                "section": "Trivial Changes"
-              },
-              {
-                "type": "docs",
-                "section": "Trivial Changes"
-              },
-              {
-                "type": "test",
-                "section": "Tests"
-              }
-            ]
-          }
-        }
-      ],
-      "@semantic-release/changelog",
-      [
-        "@semantic-release/npm",
-        {
-          "pkgRoot": "dual-publish-tmp"
-        }
-      ],
-      "@semantic-release/github",
-      "@semantic-release/git"
-    ]
-  }
+  "homepage": "https://github.com/bitrainforest/filmeta-client-rpc.js",
+  "devDependencies": {
+    "@types/jest": "27.0.3",
+    "@typescript-eslint/eslint-plugin": "5.5.0",
+    "@typescript-eslint/parser": "5.5.0",
+    "eslint": "8.4.1",
+    "eslint-config-eliassama": "1.3.2",
+    "eslint-plugin-jest": "25.3.0",
+    "jest": "27.4.3",
+    "pre-commit": "1.2.2",
+    "prettier": "2.5.1",
+    "ts-jest": "27.1.1",
+    "typescript": "4.5.2"
+  },
+  "files": [
+    "lib/*"
+  ]
 }
