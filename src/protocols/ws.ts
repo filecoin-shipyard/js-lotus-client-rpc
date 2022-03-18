@@ -1,4 +1,4 @@
-import { JsonRpcV2Error, JsonRpcV2Request, ProtocolOptions } from '../index';
+import { JsonRpcV2Error, JsonRpcV2Request, ProtocolOptions } from './index';
 import { exception, format, println } from '../utils';
 import { isBrowser, isNode, isObjectString, noEmpArray } from 'comsvr-ast';
 import * as Ws from 'ws';

@@ -50,6 +50,8 @@
   ],
   "dependencies": {
     "comsvr-ast": "2.1.1",
+    "comsvr-random": "^0.1.4",
+    "node-fetch": "3.2.3",
     "ws": "8.5.0"
   }
 }

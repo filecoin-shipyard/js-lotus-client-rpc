@@ -1,5 +1,5 @@
 import * as chalk from 'chalk';
-import { ProtocolOptions } from '../index';
+import { ProtocolOptions } from '../protocols';
 
 export enum Environment {
   Node = 1,
@@ -28,6 +28,16 @@ export const println = {
 };
 
 export const format = {
+  getHttpUrl(url: string) {
+    url = url.replace(/^wss:/, 'https:').replace(/^ws:/, 'http:');
+
+    if (!/^http(s)?:\/\//.test(url)) {
+      throw exception.error('Is not a http or https url.');
+    }
+
+    return url;
+  },
+
   getWsUrl(url: string) {
     url = url.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:');
 
