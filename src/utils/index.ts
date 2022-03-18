@@ -27,7 +27,17 @@ export const println = {
   },
 };
 
-export const authorization = {
+export const format = {
+  getWsUrl(url: string) {
+    url = url.replace(/^https:/, 'wss:').replace(/^http:/, 'ws:');
+
+    if (!/^ws(s)?:\/\//.test(url)) {
+      throw exception.error('Is not a ws or wss url.');
+    }
+
+    return url;
+  },
+
   getTokenUrl(url: string, options: ProtocolOptions): string {
     const { auth: { token } = {} } = options;
 
@@ -41,5 +51,28 @@ export const authorization = {
     }
 
     return url;
+  },
+
+  getHeader(options: ProtocolOptions): { [index: string]: string } {
+    const { auth: { authHeader, token } = {} } = options;
+
+    const headerMap = new Map<string, string>([
+      ['Content-Type', 'text/plain;charset=UTF-8'],
+      ['Accept', '*/*'],
+    ]);
+
+    if (typeof token === 'string') {
+      headerMap.set('Authorization', `Bearer ${token}`);
+    } else if (typeof token === 'function') {
+      const tokenResult = token();
+      if (typeof tokenResult === 'string') {
+        headerMap.set('Authorization', `Bearer ${token}`);
+      }
+    }
+
+    if (typeof authHeader === 'string') {
+      headerMap.set('Authorization', authHeader);
+    }
+    return Object.fromEntries(headerMap.entries());
   },
 };
