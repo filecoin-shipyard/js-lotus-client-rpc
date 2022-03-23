@@ -2,8 +2,8 @@
   "name": "@bit-rainforest/filmeta-client-rpc.js",
   "version": "0.0.0",
   "description": "FilMeta 2.0 RPC api js client.",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
   "scripts": {
     "test": "jest --config jestconfig.json",
     "format": "prettier --write src/",
