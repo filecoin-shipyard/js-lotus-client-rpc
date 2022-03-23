@@ -7,5 +7,6 @@ module.exports = {
   extends: ['eliassama/typescript'],
   rules: {
     '@typescript-eslint/no-explicit-any': ['off'],
+    "quotes": [2, "double"],
   },
 };
