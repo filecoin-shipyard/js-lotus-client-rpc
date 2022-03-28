@@ -52,9 +52,8 @@ class LotusRPC {
     return this.provider.send(method, params);
   }
 
-  callSchemaMethodSub(method, ...args) {
-    const [cb, ...params] = args;
-    return this.provider.sendSubscription(method, params, cb);
+  callSchemaMethodSub(method, ...params) {
+    return this.provider.sendSubscription(method, params);
   }
 
   async importFile(body) {

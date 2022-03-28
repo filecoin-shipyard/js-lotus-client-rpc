@@ -1,10 +1,19 @@
-const { ServiceMethods } = require("./schema");
+const { ChainMethods, StateMethods, ModelServiceMethods } = require("./schema");
 
+const chain = {
+  methods: ChainMethods,
+};
 
-const service = {
-  methods: ServiceMethods
-}
+const state = {
+  methods: StateMethods,
+};
+
+const modelService = {
+  methods: ModelServiceMethods,
+};
 
 module.exports = {
-  service
-}
+  chain,
+  state,
+  modelService
+};
